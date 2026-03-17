@@ -31,6 +31,10 @@ main {
     font-size: 1.5rem;
 }
 
+.logo-img{
+    height: 150px;
+}
+
 /* Cards */
 .card {
     border: none;
@@ -44,8 +48,8 @@ main {
 }
 
 .card-header {
-    border-radius: 10px 10px 0 0 !important;
-    font-weight: 600;
+    display: flex;
+    justify-content: center;
 }
 
 /* Botões */

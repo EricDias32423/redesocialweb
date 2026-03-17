@@ -3,7 +3,7 @@
 <?php $__env->startSection('content'); ?>
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div>
+        <div class="card shadow-lg">
             <div class="card-header bg-success text-white text-center py-3">
                 <h4 class="mb-0">
                     <i class="fas fa-user-plus me-2"></i>Cadastro - Usuário Comum

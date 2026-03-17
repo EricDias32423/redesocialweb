@@ -5,11 +5,9 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card shadow-lg">
+        <div>
             <div class="card-header bg-success text-white text-center py-3">
-                <h4 class="mb-0">
-                    <i class="fas fa-user-plus me-2"></i>Cadastro - Usuário Comum
-                </h4>
+                <img src="" alt="" class="logo-img">
             </div>
             <div class="card-body p-4">
                 <form method="POST" action="{{ route('regular.register') }}" enctype="multipart/form-data">

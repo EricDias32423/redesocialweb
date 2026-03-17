@@ -27,52 +27,124 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {{-- Menu para usuários NÃO logados --}}
-                    @guest
+                    {{-- Verifica se NINGUÉM está logado (nem regular, nem ong) --}}
+                    @guest('regular')
+                        @guest('ong')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('choose.role') }}">
+                                    <i class="fas fa-user-circle me-1"></i>Acessar
+                                </a>
+                            </li>
+                        @endguest
+                    @endguest
+
+                    {{-- MENU PARA USUÁRIO COMUM (RegularUser) --}}
+                        @auth('regular')
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-circle me-1"></i>
+                                    {{ Auth::guard('regular')->user()->name }}
+                                    <span class="badge bg-light text-success ms-2">Usuário</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('regular.dashboard') }}">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a>
+                                    </li>
+                                    <li>
+                                        {{-- CORRIGIDO: usar regular.profile.edit --}}
+                                        <a class="dropdown-item" href="{{ route('regular.profile.edit') }}">
+                                            <i class="fas fa-user-cog me-2"></i>Meu Perfil
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('regular.ongs.index') }}">
+                                            <i class="fas fa-hand-holding-heart me-2"></i>Descobrir ONGs
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('regular.logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Sair
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endauth
+
+                    {{-- MENU PARA ONG --}}
+                    @auth('ong')
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}">
-                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
+                                <i class="fas fa-home me-1"></i>Início
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">
-                                <i class="fas fa-user-plus me-1"></i>Registrar
-                            </a>
-                        </li>
-                    @else
-                        {{-- Menu para usuários LOGADOS --}}
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('posts.index') ? 'active' : '' }}" href="{{ route('posts.index') }}">
-                                <i class="fas fa-home me-1"></i>Feed
+                                <i class="fas fa-stream me-1"></i>Feed
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('posts.create') ? 'active' : '' }}" href="{{ route('posts.create') }}">
+                            <a class="nav-link {{ request()->routeIs('posts.create') ? 'active' : '' }}" 
+                            href="{{ route('posts.create') }}">  <!-- ISSO DEVE FUNCIONAR AGORA -->
                                 <i class="fas fa-plus-circle me-1"></i>Novo Post
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('my-posts') ? 'active' : '' }}" href="{{ route('my-posts') }}">
-                                <i class="fas fa-user me-1"></i>Meus Posts
+                                <i class="fas fa-newspaper me-1"></i>Meus Posts
                             </a>
                         </li>
                         
-                        {{-- Dropdown do usuário --}}
+                        {{-- Dropdown da ONG --}}
+                       
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-1"></i>
-                                {{ Auth::user()->name }}
+                            <a class="nav-link dropdown-toggle" href="#" id="ongDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if(Auth::guard('ong')->user()->logo)
+                                    <img src="{{ asset('storage/' . Auth::guard('ong')->user()->logo) }}" 
+                                        class="rounded-circle me-1" 
+                                        style="width: 25px; height: 25px; object-fit: cover;"
+                                        alt="Logo">
+                                @else
+                                    <i class="fas fa-building me-1"></i>
+                                @endif
+                                {{ Auth::guard('ong')->user()->ong_name }}
+                                <span class="badge bg-light text-primary ms-2">ONG</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ongDropdown">
                                 <li>
-                                    <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                        <i class="fas fa-user-cog me-2"></i>Meu Perfil
+                                    <a class="dropdown-item" href="{{ route('ong.dashboard') }}">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    {{-- CORRIGIDO: usar ong.profile.edit em vez de profile.ong.edit --}}
+                                    <a class="dropdown-item" href="{{ route('ong.profile.edit') }}">
+                                        <i class="fas fa-building me-2"></i>Perfil da ONG
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('posts.create') }}">
+                                        <i class="fas fa-plus-circle me-2"></i>Novo Post
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('my-posts') }}">
+                                        <i class="fas fa-newspaper me-2"></i>Meus Posts
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('ong.statistics') }}">
+                                        <i class="fas fa-chart-bar me-2"></i>Estatísticas
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    {{-- Formulário POST para logout (CORRETO) --}}
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('ong.logout') }}">
                                         @csrf
                                         <button type="submit" class="dropdown-item text-danger">
                                             <i class="fas fa-sign-out-alt me-2"></i>Sair
@@ -81,7 +153,7 @@
                                 </li>
                             </ul>
                         </li>
-                    @endguest
+                    @endauth
                 </ul>
             </div>
         </div>
@@ -138,13 +210,19 @@
     
     {{-- Script para active class no menu --}}
     <script>
-        // Destacar link ativo no menu
         $(document).ready(function() {
+            // Active class para links normais
             var currentUrl = window.location.pathname;
             $('.navbar-nav .nav-link').each(function() {
                 if ($(this).attr('href') === currentUrl) {
                     $(this).addClass('active');
                 }
+            });
+
+            // Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
     </script>

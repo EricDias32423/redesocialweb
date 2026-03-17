@@ -10,11 +10,12 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = [
+        'ong_id',
         'title',
         'content',
-        'image',
         'category',
-        'user_id'
+        'image',
+        'views'
     ];
 
     protected $casts = [
@@ -22,14 +23,23 @@ class Post extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function user()
+    public function ong()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Ong::class);
     }
 
-    // Scope para posts do usuário atual
-    public function scopeFromUser($query, $userId)
+    public function comments()
     {
-        return $query->where('user_id', $userId);
+        return $this->hasMany(Comment::class);
+    }
+
+    public function likes()
+    {
+    return $this->hasMany(Like::class);
+    }
+
+    public function likesCount()
+    {
+    return $this->likes()->count();
     }
 }

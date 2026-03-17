@@ -1,39 +1,144 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PostController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Web\PostController;
+use App\Http\Controllers\Auth\RegularUserAuthController;
+use App\Http\Controllers\Auth\OngAuthController;
+use App\Http\Controllers\Profile\RegularUserProfileController;
+use App\Http\Controllers\Profile\OngProfileController;
+use App\Http\Controllers\Dashboard\RegularUserDashboardController;
+use App\Http\Controllers\Dashboard\OngDashboardController;
+use App\Http\Controllers\Regular\OngController as RegularOngController;
+use App\Http\Controllers\CommentController;
 
-// Rotas públicas
-Route::get('/', [PostController::class, 'index'])->name('home');
-
-// Rotas de autenticação
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+Route::get('/urgente', function() {
+    return "🚀 Rota de emergência funcionou!";
 });
 
-// Rotas protegidas
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/teste-simples', function() {
+    return "<h1>FUNCIONOU!</h1><p>Se você está vendo isso, o Laravel está funcionando.</p>";
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// ===========================================
+// ROTAS PÚBLICAS
+// ===========================================
+Route::get('/', function () {
+    if (auth()->guard('regular')->check()) {
+        return redirect()->route('regular.dashboard');
+    }
+    if (auth()->guard('ong')->check()) {
+        return redirect()->route('ong.dashboard');
+    }
+    return view('auth.choose-role');
+})->name('home');
+
+Route::get('/choose-role', function() {
+    return view('auth.choose-role');
+})->name('choose.role');
+
+// ===========================================
+// ROTAS PARA USUÁRIOS COMUNS
+// ===========================================
+Route::prefix('regular')->name('regular.')->group(function () {
     
-    // Perfil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Rotas de autenticação (guest)
+    Route::middleware('guest:regular')->group(function () {
+        Route::get('/login', [RegularUserAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [RegularUserAuthController::class, 'login']);
+        Route::get('/register', [RegularUserAuthController::class, 'showRegisterForm'])->name('register');
+        Route::post('/register', [RegularUserAuthController::class, 'register']);
+    });
+
+    // Rotas protegidas (auth)
+    Route::middleware('auth:regular')->group(function () {
+        // Logout
+        Route::post('/logout', [RegularUserAuthController::class, 'logout'])->name('logout');
+        
+        // Dashboard
+        Route::get('/dashboard', [RegularUserDashboardController::class, 'index'])->name('dashboard');
+        
+        // Perfil
+        Route::get('/profile', [RegularUserProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [RegularUserProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [RegularUserProfileController::class, 'destroy'])->name('profile.destroy');
+        
+        // Upload de avatar
+        Route::post('/profile/avatar', [RegularUserProfileController::class, 'uploadAvatar'])->name('profile.avatar');
+        Route::delete('/profile/avatar', [RegularUserProfileController::class, 'removeAvatar'])->name('profile.avatar.remove');
+        
+        // ONGs
+        Route::get('/ongs', [RegularOngController::class, 'index'])->name('ongs.index');
+        Route::get('/ongs/{ong}', [RegularOngController::class, 'show'])->name('ongs.show');
+        Route::post('/ongs/{ong}/support', [RegularOngController::class, 'support'])->name('ongs.support');
+        Route::delete('/ongs/{ong}/unsupport', [RegularOngController::class, 'unsupport'])->name('ongs.unsupport');
+        
+        // Comentários
+        Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
+        Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    });
+});
+
+// ===========================================
+// ROTAS PARA ONGS
+// ===========================================
+Route::prefix('ong')->name('ong.')->group(function () {
     
-    // Posts - Web routes
+    // Rotas de autenticação (guest)
+    Route::middleware('guest:ong')->group(function () {
+        Route::get('/login', [OngAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [OngAuthController::class, 'login']);
+        Route::get('/register', [OngAuthController::class, 'showRegisterForm'])->name('register');
+        Route::post('/register', [OngAuthController::class, 'register']);
+    });
+
+    // Rotas protegidas (auth)
+    Route::middleware('auth:ong')->group(function () {
+        // Logout
+        Route::post('/logout', [OngAuthController::class, 'logout'])->name('logout');
+        
+        // Dashboard
+        Route::get('/dashboard', [OngDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/statistics', [OngDashboardController::class, 'engagementAnalytics'])->name('statistics');
+        
+        // Perfil
+        Route::get('/profile', [OngProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [OngProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [OngProfileController::class, 'destroy'])->name('profile.destroy'); // Corrigido: 'destroy' não 'destro'
+        
+        // Upload de logo
+        Route::post('/profile/logo', [OngProfileController::class, 'uploadLogo'])->name('profile.logo');
+        Route::delete('/profile/logo', [OngProfileController::class, 'removeLogo'])->name('profile.logo.remove');
+        
+        // Comentários (se ONGs puderem comentar)
+        Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
+        Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    });
+});
+
+// ===========================================
+// ROTAS DE POSTS PARA ONGS (UMA ÚNICA VEZ, FORA DO PREFIXO)
+// ===========================================
+Route::middleware('auth:ong')->group(function () {
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
-    Route::get('/my-posts', [PostController::class, 'myPosts'])->name('my-posts');
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::get('/my-posts', [PostController::class, 'myPosts'])->name('my-posts');
 });
 
-// Rotas públicas de posts - DEFINIR A ROTA posts.index AQUI
-Route::get('/posts', [PostController::class, 'index'])->name('posts.index'); // <- ADICIONE ESTA LINHA
+// ===========================================
+// ROTAS DE POSTS PÚBLICAS
+// ===========================================
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');

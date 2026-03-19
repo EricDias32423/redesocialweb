@@ -36,5 +36,10 @@ class RegularUser extends Authenticatable
     {
         return $this->morphMany(Like::class, 'likable');
     }
+    public function supportedOngs()
+    {
+        return $this->belongsToMany(Ong::class, 'ong_user', 'regular_user_id', 'ong_id')
+                    ->withTimestamps();
+    }
     
 }

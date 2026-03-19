@@ -1,13 +1,11 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Painel da ONG'); ?>
 
-@section('title', 'Painel da ONG')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
 <div class="row g-4">
     <div class="col-12">
-        {{-- Header com saudação --}}
+        
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="h2 fw-bold mb-1" style="color: var(--text-dark);">
@@ -16,29 +14,30 @@
                 </h1>
                 <p class="text-muted mb-0">
                     <i class="fas fa-calendar-alt me-1"></i>
-                    {{ now()->format('d F, Y') }}
+                    <?php echo e(now()->format('d F, Y')); ?>
+
                 </p>
             </div>
             
-            @php
+            <?php
                 $createRoute = null;
                 if (Route::has('posts.create')) {
                     $createRoute = route('posts.create');
                 } elseif (Route::has('ong.posts.create')) {
                     $createRoute = route('ong.posts.create');
                 }
-            @endphp
+            ?>
             
-            @if($createRoute)
-                <a href="{{ $createRoute }}" class="btn btn-primary mt-3 mt-sm-0">
+            <?php if($createRoute): ?>
+                <a href="<?php echo e($createRoute); ?>" class="btn btn-primary mt-3 mt-sm-0">
                     <i class="fas fa-plus-circle me-2"></i>Novo Post
                 </a>
-            @else
+            <?php else: ?>
                 <span class="text-danger bg-light px-3 py-2 rounded">Rota de criação não encontrada</span>
-            @endif
+            <?php endif; ?>
         </div>
 
-        {{-- Cards de estatísticas --}}
+        
         <div class="row g-4 mb-4">
             <div class="col-sm-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
@@ -46,7 +45,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Total de Posts</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $stats['total_posts'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($stats['total_posts']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-newspaper fa-2x" style="color: var(--primary-blue);"></i>
@@ -62,7 +61,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Visualizações</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $stats['total_views'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($stats['total_views']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-eye fa-2x" style="color: var(--primary-blue);"></i>
@@ -78,7 +77,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Comentários</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $stats['total_comments'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($stats['total_comments']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-comments fa-2x" style="color: var(--primary-blue);"></i>
@@ -94,7 +93,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Apoiadores</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $stats['total_followers'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($stats['total_followers']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-heart fa-2x" style="color: var(--primary-blue);"></i>
@@ -106,7 +105,7 @@
         </div>
 
         <div class="row g-4">
-            {{-- Gráfico de atividades --}}
+            
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white border-0 pt-4">
@@ -121,7 +120,7 @@
                 </div>
             </div>
 
-            {{-- Informações da ONG --}}
+            
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-white border-0 pt-4">
@@ -132,30 +131,32 @@
                     </div>
                     <div class="card-body text-center">
                         <div class="mb-3">
-                            @if(Auth::guard('ong')->user()->logo)
-                                <img src="{{ asset('storage/' . Auth::guard('ong')->user()->logo) }}" 
+                            <?php if(Auth::guard('ong')->user()->logo): ?>
+                                <img src="<?php echo e(asset('storage/' . Auth::guard('ong')->user()->logo)); ?>" 
                                      class="rounded-circle border border-2"
                                      style="width: 100px; height: 100px; object-fit: cover;">
-                            @else
+                            <?php else: ?>
                                 <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center"
                                      style="width: 100px; height: 100px;">
                                     <i class="fas fa-building fa-3x" style="color: var(--primary-blue);"></i>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         
-                        <h5 class="fw-bold mb-1">{{ Auth::guard('ong')->user()->ong_name }}</h5>
+                        <h5 class="fw-bold mb-1"><?php echo e(Auth::guard('ong')->user()->ong_name); ?></h5>
                         <p class="small text-muted mb-3">
-                            <i class="fas fa-envelope me-1"></i>{{ Auth::guard('ong')->user()->email }}
+                            <i class="fas fa-envelope me-1"></i><?php echo e(Auth::guard('ong')->user()->email); ?>
+
                         </p>
                         
                         <div class="d-flex justify-content-center gap-2 mb-3">
                             <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
-                                <i class="fas fa-calendar me-1"></i>Desde {{ $stats['member_since'] }}
+                                <i class="fas fa-calendar me-1"></i>Desde <?php echo e($stats['member_since']); ?>
+
                             </span>
                         </div>
                         
-                        <a href="{{ route('ong.profile.edit') }}" class="btn btn-outline-primary w-100">
+                        <a href="<?php echo e(route('ong.profile.edit')); ?>" class="btn btn-outline-primary w-100">
                             <i class="fas fa-edit me-2"></i>Editar Perfil
                         </a>
                     </div>
@@ -163,7 +164,7 @@
             </div>
         </div>
 
-        {{-- Últimos posts --}}
+        
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
@@ -173,7 +174,7 @@
                             Últimos Posts
                         </h5>
                         
-                        @php
+                        <?php
                             $myPostsRoute = null;
                             if (Route::has('my-posts')) {
                                 $myPostsRoute = route('my-posts');
@@ -182,13 +183,13 @@
                             } elseif (Route::has('posts.index')) {
                                 $myPostsRoute = route('posts.index');
                             }
-                        @endphp
+                        ?>
                         
-                        @if($myPostsRoute)
-                            <a href="{{ $myPostsRoute }}" class="btn btn-sm btn-outline-primary">
+                        <?php if($myPostsRoute): ?>
+                            <a href="<?php echo e($myPostsRoute); ?>" class="btn btn-sm btn-outline-primary">
                                 Ver todos <i class="fas fa-arrow-right ms-1"></i>
                             </a>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -203,77 +204,81 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($recentPosts as $post)
+                                    <?php $__empty_1 = true; $__currentLoopData = $recentPosts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <tr>
                                             <td>
-                                                @php
+                                                <?php
                                                     $showRoute = Route::has('posts.show') ? route('posts.show', $post) : null;
-                                                @endphp
+                                                ?>
                                                 
-                                                @if($showRoute)
-                                                    <a href="{{ $showRoute }}" class="text-decoration-none fw-medium">
-                                                        {{ Str::limit($post->title, 40) }}
+                                                <?php if($showRoute): ?>
+                                                    <a href="<?php echo e($showRoute); ?>" class="text-decoration-none fw-medium">
+                                                        <?php echo e(Str::limit($post->title, 40)); ?>
+
                                                     </a>
-                                                @else
-                                                    {{ Str::limit($post->title, 40) }}
-                                                @endif
+                                                <?php else: ?>
+                                                    <?php echo e(Str::limit($post->title, 40)); ?>
+
+                                                <?php endif; ?>
                                             </td>
                                             <td>
-                                                @if($post->category)
-                                                    <span class="badge bg-light text-dark">{{ $post->category }}</span>
-                                                @else
+                                                <?php if($post->category): ?>
+                                                    <span class="badge bg-light text-dark"><?php echo e($post->category); ?></span>
+                                                <?php else: ?>
                                                     <span class="text-muted">—</span>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <span class="small text-muted">
                                                     <i class="far fa-calendar me-1"></i>
-                                                    {{ $post->created_at->format('d/m/Y') }}
+                                                    <?php echo e($post->created_at->format('d/m/Y')); ?>
+
                                                 </span>
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge rounded-pill bg-light text-dark">
-                                                    {{ $post->comments_count ?? 0 }}
+                                                    <?php echo e($post->comments_count ?? 0); ?>
+
                                                 </span>
                                             </td>
                                             <td class="text-end">
-                                                @php
+                                                <?php
                                                     $editRoute = Route::has('posts.edit') ? route('posts.edit', $post) : null;
                                                     $destroyRoute = Route::has('posts.destroy') ? route('posts.destroy', $post) : null;
-                                                @endphp
+                                                ?>
                                                 
-                                                @if($editRoute)
-                                                    <a href="{{ $editRoute }}" class="btn btn-sm btn-outline-warning me-1">
+                                                <?php if($editRoute): ?>
+                                                    <a href="<?php echo e($editRoute); ?>" class="btn btn-sm btn-outline-warning me-1">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                @endif
+                                                <?php endif; ?>
                                                 
-                                                @if($destroyRoute)
-                                                    <form action="{{ $destroyRoute }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                <?php if($destroyRoute): ?>
+                                                    <form action="<?php echo e($destroyRoute); ?>" method="POST" class="d-inline">
+                                                        <?php echo csrf_field(); ?>
+                                                        <?php echo method_field('DELETE'); ?>
                                                         <button type="submit" class="btn btn-sm btn-outline-danger" 
                                                                 onclick="return confirm('Excluir este post?')">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
-                                    @empty
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                         <tr>
                                             <td colspan="5" class="text-center py-5">
                                                 <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
                                                 <p class="text-muted mb-3">Nenhum post criado ainda</p>
                                                 
-                                                @if($createRoute)
-                                                    <a href="{{ $createRoute }}" class="btn btn-primary">
+                                                <?php if($createRoute): ?>
+                                                    <a href="<?php echo e($createRoute); ?>" class="btn btn-primary">
                                                         <i class="fas fa-plus-circle me-2"></i>Criar primeiro post
                                                     </a>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
-                                    @endforelse
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -284,7 +289,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -339,5 +344,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ericl\Downloads\projetas\redesocialweb\resources\views/ong/dashboard.blade.php ENDPATH**/ ?>

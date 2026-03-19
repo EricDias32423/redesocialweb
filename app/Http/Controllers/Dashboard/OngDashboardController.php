@@ -189,7 +189,7 @@ public function engagementAnalytics()
 
 private function getBestPerformingCategories($ong)
 {
-    return DB::select("
+    $results = DB::select("
         SELECT 
             category,
             COUNT(*) as total_posts,
@@ -199,6 +199,8 @@ private function getBestPerformingCategories($ong)
         GROUP BY category
         ORDER BY total_comments DESC
     ", [$ong->id]);
+    
+    return collect($results);
 }
 
 }

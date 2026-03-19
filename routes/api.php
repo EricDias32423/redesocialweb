@@ -30,6 +30,7 @@ Route::get('/posts/{post}', [PostController::class, 'show']);
 // Comentários públicos
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
 Route::get('/comments/{comment}', [CommentController::class, 'show']);
+Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
 
 // ONGs públicas
 Route::get('/ongs', [OngController::class, 'index']);

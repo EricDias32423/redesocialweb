@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Estatísticas da ONG'); ?>
 
-@section('title', 'Estatísticas da ONG')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row g-4">
     <div class="col-12">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
@@ -10,13 +8,13 @@
                 <i class="fas fa-chart-bar me-2" style="color: var(--primary-blue);"></i>
                 Estatísticas
             </h1>
-            <a href="{{ route('ong.dashboard') }}" class="btn btn-outline-secondary">
+            <a href="<?php echo e(route('ong.dashboard')); ?>" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Voltar
             </a>
         </div>
         <p class="text-muted mb-4">Acompanhe o desempenho da sua ONG</p>
 
-        {{-- Cards resumo --}}
+        
         <div class="row g-4 mb-4">
             <div class="col-sm-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
@@ -24,7 +22,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Total de Posts</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $statistics['total_posts'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($statistics['total_posts']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-newspaper fa-2x" style="color: var(--primary-blue);"></i>
@@ -40,7 +38,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Visualizações</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $statistics['total_views'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($statistics['total_views']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-eye fa-2x" style="color: var(--primary-blue);"></i>
@@ -56,7 +54,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Comentários</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $statistics['total_comments'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($statistics['total_comments']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-comments fa-2x" style="color: var(--primary-blue);"></i>
@@ -72,7 +70,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <span class="small text-muted text-uppercase">Curtidas</span>
-                                <h2 class="mt-2 mb-0 fw-bold">{{ $statistics['total_likes'] }}</h2>
+                                <h2 class="mt-2 mb-0 fw-bold"><?php echo e($statistics['total_likes']); ?></h2>
                             </div>
                             <div class="rounded-circle bg-light p-3">
                                 <i class="fas fa-heart fa-2x" style="color: var(--primary-blue);"></i>
@@ -83,7 +81,7 @@
             </div>
         </div>
 
-        {{-- Gráficos --}}
+        
         <div class="row g-4 mb-4">
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm">
@@ -114,7 +112,7 @@
             </div>
         </div>
 
-        {{-- Tabelas de desempenho --}}
+        
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm">
@@ -126,19 +124,19 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
-                            @forelse($statistics['most_commented_posts'] as $post)
-                                <a href="{{ route('posts.show', $post) }}" 
+                            <?php $__empty_1 = true; $__currentLoopData = $statistics['most_commented_posts']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <a href="<?php echo e(route('posts.show', $post)); ?>" 
                                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
-                                    <span class="fw-medium">{{ Str::limit($post->title, 40) }}</span>
+                                    <span class="fw-medium"><?php echo e(Str::limit($post->title, 40)); ?></span>
                                     <span class="badge rounded-pill bg-light text-dark">
-                                        {{ $post->comments_count }} <i class="fas fa-comment ms-1"></i>
+                                        <?php echo e($post->comments_count); ?> <i class="fas fa-comment ms-1"></i>
                                     </span>
                                 </a>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <div class="text-center py-5">
                                     <p class="text-muted mb-0">Nenhum dado disponível</p>
                                 </div>
-                            @endforelse
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -154,19 +152,19 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
-                            @forelse($statistics['most_liked_posts'] as $post)
-                                <a href="{{ route('posts.show', $post) }}" 
+                            <?php $__empty_1 = true; $__currentLoopData = $statistics['most_liked_posts']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <a href="<?php echo e(route('posts.show', $post)); ?>" 
                                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
-                                    <span class="fw-medium">{{ Str::limit($post->title, 40) }}</span>
+                                    <span class="fw-medium"><?php echo e(Str::limit($post->title, 40)); ?></span>
                                     <span class="badge rounded-pill bg-light text-dark">
-                                        {{ $post->likes_count }} <i class="fas fa-heart ms-1 text-danger"></i>
+                                        <?php echo e($post->likes_count); ?> <i class="fas fa-heart ms-1 text-danger"></i>
                                     </span>
                                 </a>
-                            @empty
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <div class="text-center py-5">
                                     <p class="text-muted mb-0">Nenhum dado disponível</p>
                                 </div>
-                            @endforelse
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -175,7 +173,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -184,12 +182,12 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(postsCtx, {
         type: 'bar',
         data: {
-            labels: {!! json_encode($statistics['posts_per_month']->pluck('month')->map(function($m) {
+            labels: <?php echo json_encode($statistics['posts_per_month']->pluck('month')->map(function($m) {
                 return \Carbon\Carbon::create()->month($m)->format('F');
-            })) !!},
+            })); ?>,
             datasets: [{
                 label: 'Posts',
-                data: {!! json_encode($statistics['posts_per_month']->pluck('total')) !!},
+                data: <?php echo json_encode($statistics['posts_per_month']->pluck('total')); ?>,
                 backgroundColor: 'rgba(0, 123, 255, 0.2)',
                 borderColor: '#007bff',
                 borderWidth: 1,
@@ -225,9 +223,9 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(categoriesCtx, {
         type: 'doughnut',
         data: {
-            labels: {!! json_encode($statistics['best_performing_categories']->pluck('category')) !!},
+            labels: <?php echo json_encode($statistics['best_performing_categories']->pluck('category')); ?>,
             datasets: [{
-                data: {!! json_encode($statistics['best_performing_categories']->pluck('total_posts')) !!},
+                data: <?php echo json_encode($statistics['best_performing_categories']->pluck('total_posts')); ?>,
                 backgroundColor: [
                     'rgba(0, 123, 255, 0.7)',
                     'rgba(40, 167, 69, 0.7)',
@@ -251,5 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ericl\Downloads\projetas\redesocialweb\resources\views/ong/statistics.blade.php ENDPATH**/ ?>

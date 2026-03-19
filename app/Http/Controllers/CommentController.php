@@ -13,34 +13,63 @@ class CommentController extends Controller
      * Store a newly created comment.
      */
     public function store(Request $request, Post $post)
-    {
+{
+    // Garantir que a resposta sempre seja JSON
+    if (!$request->expectsJson()) {
+        return response()->json(['success' => false, 'message' => 'Requisição inválida'], 400);
+    }
+    
+    try {
         $request->validate([
-            'content' => 'required|string|min:2|max:1000',
+            'content' => 'required|string|max:1000'
         ]);
 
-        // Determinar quem está comentando (usuário comum ou ONG)
+        $user = null;
+        $userType = null;
+
         if (Auth::guard('regular')->check()) {
-            $commentableType = RegularUser::class;
-            $commentableId = Auth::guard('regular')->id();
-            $guard = 'regular';
+            $user = Auth::guard('regular')->user();
+            $userType = RegularUser::class;
         } elseif (Auth::guard('ong')->check()) {
-            $commentableType = Ong::class;
-            $commentableId = Auth::guard('ong')->id();
-            $guard = 'ong';
+            $user = Auth::guard('ong')->user();
+            $userType = Ong::class;
         } else {
-            return redirect()->back()->with('error', 'Você precisa estar logado para comentar.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuário não autenticado'
+            ], 401);
         }
 
-        $comment = Comment::create([
-            'commentable_type' => $commentableType,
-            'commentable_id' => $commentableId,
-            'post_id' => $post->id,
+        $comment = $post->comments()->create([
+            'commentable_id' => $user->id,
+            'commentable_type' => $userType,
             'content' => $request->content,
-            'status' => 'approved' // Ou 'pending' se precisar de moderação
+            'status' => 'approved'
         ]);
 
-        return redirect()->back()->with('success', 'Comentário adicionado com sucesso!');
+        return response()->json([
+            'success' => true,
+            'comment' => [
+                'id' => $comment->id,
+                'content' => $comment->content,
+                'author_name' => $user->name ?? $user->ong_name,
+                'created_at' => $comment->created_at->diffForHumans()
+            ]
+        ]);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro de validação',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro interno: ' . $e->getMessage()
+        ], 500);
     }
+}
 
     /**
      * Update the specified comment.

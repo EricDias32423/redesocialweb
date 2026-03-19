@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Meus Posts'); ?>
 
-@section('title', 'Meus Posts')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row justify-content-center">
     <div class="col-md-10">
         <div class="card border-0 shadow-sm">
@@ -14,13 +12,13 @@
                     </h4>
                     <p class="text-muted small mb-0">Gerencie todos os seus posts</p>
                 </div>
-                <a href="{{ route('posts.create') }}" class="btn btn-primary mt-3 mt-sm-0">
+                <a href="<?php echo e(route('posts.create')); ?>" class="btn btn-primary mt-3 mt-sm-0">
                     <i class="fas fa-plus-circle me-2"></i>Novo Post
                 </a>
             </div>
 
             <div class="card-body">
-                @if($posts->count() > 0)
+                <?php if($posts->count() > 0): ?>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -33,44 +31,48 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($posts as $post)
+                                <?php $__currentLoopData = $posts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
                                         <td>
-                                            <a href="{{ route('posts.show', $post) }}" class="text-decoration-none fw-medium">
-                                                {{ Str::limit($post->title, 40) }}
+                                            <a href="<?php echo e(route('posts.show', $post)); ?>" class="text-decoration-none fw-medium">
+                                                <?php echo e(Str::limit($post->title, 40)); ?>
+
                                             </a>
                                         </td>
                                         <td>
-                                            @if($post->category)
+                                            <?php if($post->category): ?>
                                                 <span class="badge bg-light text-dark">
-                                                    {{ $post->category }}
+                                                    <?php echo e($post->category); ?>
+
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="text-muted">—</span>
-                                            @endif
+                                            <?php endif; ?>
                                         </td>
                                         <td>
                                             <span class="small text-muted">
                                                 <i class="far fa-calendar me-1"></i>
-                                                {{ $post->created_at->format('d/m/Y H:i') }}
+                                                <?php echo e($post->created_at->format('d/m/Y H:i')); ?>
+
                                             </span>
                                         </td>
                                         <td>
                                             <span class="badge rounded-pill bg-light text-dark">
-                                                {{ $post->comments_count ?? 0 }}
+                                                <?php echo e($post->comments_count ?? 0); ?>
+
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            <a href="{{ route('posts.edit', $post) }}" 
+                                            <a href="<?php echo e(route('posts.edit', $post)); ?>" 
                                                class="btn btn-sm btn-outline-warning me-1"
                                                title="Editar">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('posts.destroy', $post) }}" 
+                                            <form action="<?php echo e(route('posts.destroy', $post)); ?>" 
                                                   method="POST" 
                                                   class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
+                                                <?php echo csrf_field(); ?>
+                                                <?php echo method_field('DELETE'); ?>
                                                 <button type="submit" 
                                                         class="btn btn-sm btn-outline-danger"
                                                         onclick="return confirm('Excluir este post?')"
@@ -80,26 +82,28 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
 
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $posts->links() }}
+                        <?php echo e($posts->links()); ?>
+
                     </div>
-                @else
+                <?php else: ?>
                     <div class="text-center py-5">
                         <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
                         <h5 class="text-muted fw-normal">Você ainda não tem posts</h5>
                         <p class="text-muted small mb-3">Comece a compartilhar suas iniciativas!</p>
-                        <a href="{{ route('posts.create') }}" class="btn btn-primary">
+                        <a href="<?php echo e(route('posts.create')); ?>" class="btn btn-primary">
                             <i class="fas fa-plus-circle me-2"></i>Criar primeiro post
                         </a>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ericl\Downloads\projetas\redesocialweb\resources\views/posts/my-posts.blade.php ENDPATH**/ ?>

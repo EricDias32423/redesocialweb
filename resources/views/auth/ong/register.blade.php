@@ -3,214 +3,171 @@
 @section('title', 'Registro de ONG')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-7">
-        <div class="card shadow-lg border-0 rounded-lg mt-5">
-            <div class="card-header bg-primary text-white text-center py-4">
-                <h3 class="mb-0">
-                    <i class="fas fa-hand-holding-heart me-2"></i>Cadastre sua ONG
-                </h3>
-                <p class="text-white-50 mb-0 small">Faça parte da nossa rede de organizações</p>
+<div class="row justify-content-center fade-in">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white text-center py-4 border-0">
+                <div class="mb-3">
+                    <div class="rounded-circle bg-light d-inline-flex p-3">
+                        <i class="fas fa-hand-holding-heart fa-3x" style="color: var(--primary-blue);"></i>
+                    </div>
+                </div>
+                <h4 class="mb-1 fw-bold">Cadastre sua ONG</h4>
+                <p class="text-muted small">Faça parte da nossa rede de organizações</p>
             </div>
-            
-            <div class="card-body p-4">
+
+            <div class="card-body px-4 py-3">
                 <form method="POST" action="{{ route('ong.register') }}" enctype="multipart/form-data">
                     @csrf
 
                     {{-- Dados do Responsável --}}
-                    <div class="bg-light p-3 rounded mb-4">
-                        <h5 class="text-primary mb-3">
-                            <i class="fas fa-user-circle me-2"></i>Dados do Responsável
-                        </h5>
-                        
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" 
-                                           class="form-control @error('responsible_name') is-invalid @enderror" 
-                                           id="responsible_name" 
-                                           name="responsible_name" 
-                                           placeholder="Nome completo"
-                                           value="{{ old('responsible_name') }}" 
-                                           required>
-                                    <label for="responsible_name">
-                                        <i class="fas fa-user me-2 text-primary"></i>Nome do Responsável
-                                    </label>
-                                    @error('responsible_name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                    <div class="mb-4">
+                        <h5 class="text-muted fw-semibold mb-3 small">DADOS DO RESPONSÁVEL</h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="responsible_name" class="form-label text-muted small fw-semibold">NOME COMPLETO</label>
+                                <input type="text" 
+                                       class="form-control @error('responsible_name') is-invalid @enderror" 
+                                       id="responsible_name" 
+                                       name="responsible_name" 
+                                       value="{{ old('responsible_name') }}" 
+                                       placeholder="Nome do responsável legal"
+                                       required>
+                                @error('responsible_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
 
                     {{-- Dados da ONG --}}
-                    <div class="bg-light p-3 rounded mb-4">
-                        <h5 class="text-primary mb-3">
-                            <i class="fas fa-building me-2"></i>Dados da ONG
-                        </h5>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" 
-                                           class="form-control @error('ong_name') is-invalid @enderror" 
-                                           id="ong_name" 
-                                           name="ong_name" 
-                                           placeholder="Nome da ONG"
-                                           value="{{ old('ong_name') }}" 
-                                           required>
-                                    <label for="ong_name">
-                                        <i class="fas fa-tag me-2 text-primary"></i>Nome da ONG
-                                    </label>
-                                    @error('ong_name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                    <div class="mb-4">
+                        <h5 class="text-muted fw-semibold mb-3 small">DADOS DA ONG</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="ong_name" class="form-label text-muted small fw-semibold">NOME DA ONG</label>
+                                <input type="text" 
+                                       class="form-control @error('ong_name') is-invalid @enderror" 
+                                       id="ong_name" 
+                                       name="ong_name" 
+                                       value="{{ old('ong_name') }}" 
+                                       placeholder="Ex: Associação Esperança"
+                                       required>
+                                @error('ong_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" 
-                                           class="form-control @error('cnpj') is-invalid @enderror" 
-                                           id="cnpj" 
-                                           name="cnpj" 
-                                           placeholder="00.000.000/0000-00"
-                                           value="{{ old('cnpj') }}">
-                                    <label for="cnpj">
-                                        <i class="fas fa-id-card me-2 text-primary"></i>CNPJ (opcional)
-                                    </label>
-                                    @error('cnpj')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-md-6">
+                                <label for="cnpj" class="form-label text-muted small fw-semibold">CNPJ</label>
+                                <input type="text" 
+                                       class="form-control @error('cnpj') is-invalid @enderror" 
+                                       id="cnpj" 
+                                       name="cnpj" 
+                                       value="{{ old('cnpj') }}"
+                                       placeholder="00.000.000/0000-00">
+                                @error('cnpj')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-12 mb-3">
-                                <div class="form-floating">
-                                    <textarea class="form-control @error('description') is-invalid @enderror" 
-                                              id="description" 
-                                              name="description" 
-                                              placeholder="Descrição da ONG"
-                                              style="height: 100px">{{ old('description') }}</textarea>
-                                    <label for="description">
-                                        <i class="fas fa-align-left me-2 text-primary"></i>Descrição (opcional)
-                                    </label>
-                                    @error('description')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-12">
+                                <label for="description" class="form-label text-muted small fw-semibold">DESCRIÇÃO</label>
+                                <textarea class="form-control @error('description') is-invalid @enderror" 
+                                          id="description" 
+                                          name="description" 
+                                          rows="3"
+                                          placeholder="Fale um pouco sobre a missão da sua ONG...">{{ old('description') }}</textarea>
+                                @error('description')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" 
-                                           class="form-control @error('phone') is-invalid @enderror" 
-                                           id="phone" 
-                                           name="phone" 
-                                           placeholder="(00) 00000-0000"
-                                           value="{{ old('phone') }}">
-                                    <label for="phone">
-                                        <i class="fas fa-phone me-2 text-primary"></i>Telefone (opcional)
-                                    </label>
-                                    @error('phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label text-muted small fw-semibold">TELEFONE</label>
+                                <input type="text" 
+                                       class="form-control @error('phone') is-invalid @enderror" 
+                                       id="phone" 
+                                       name="phone" 
+                                       value="{{ old('phone') }}"
+                                       placeholder="(00) 00000-0000">
+                                @error('phone')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" 
-                                           class="form-control @error('address') is-invalid @enderror" 
-                                           id="address" 
-                                           name="address" 
-                                           placeholder="Endereço completo"
-                                           value="{{ old('address') }}">
-                                    <label for="address">
-                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>Endereço (opcional)
-                                    </label>
-                                    @error('address')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-md-6">
+                                <label for="address" class="form-label text-muted small fw-semibold">ENDEREÇO</label>
+                                <input type="text" 
+                                       class="form-control @error('address') is-invalid @enderror" 
+                                       id="address" 
+                                       name="address" 
+                                       value="{{ old('address') }}"
+                                       placeholder="Cidade, estado">
+                                @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-12 mb-3">
-                                <label for="logo" class="form-label text-primary">
-                                    <i class="fas fa-image me-2"></i>Logo da ONG (opcional)
-                                </label>
+                            <div class="col-12">
+                                <label for="logo" class="form-label text-muted small fw-semibold">LOGO DA ONG</label>
                                 <input type="file" 
                                        class="form-control @error('logo') is-invalid @enderror" 
                                        id="logo" 
                                        name="logo" 
                                        accept="image/*">
-                                <small class="text-muted">Formatos: JPG, PNG, GIF. Máx: 2MB</small>
+                                <small class="text-muted">Formatos: JPG, PNG, GIF (máx. 2MB)</small>
                                 @error('logo')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                                 
                                 <div id="logo-preview" class="mt-2 text-center" style="display: none;">
-                                    <img src="#" alt="Preview" class="img-fluid rounded" style="max-height: 100px;">
+                                    <img src="#" alt="Preview" class="img-fluid rounded border" style="max-height: 120px;">
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {{-- Credenciais de Acesso --}}
-                    <div class="bg-light p-3 rounded mb-4">
-                        <h5 class="text-primary mb-3">
-                            <i class="fas fa-lock me-2"></i>Credenciais de Acesso
-                        </h5>
-                        
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <div class="form-floating">
-                                    <input type="email" 
-                                           class="form-control @error('email') is-invalid @enderror" 
-                                           id="email" 
-                                           name="email" 
-                                           placeholder="contato@ong.org"
-                                           value="{{ old('email') }}" 
-                                           required>
-                                    <label for="email">
-                                        <i class="fas fa-envelope me-2 text-primary"></i>E-mail institucional
-                                    </label>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                    <div class="mb-4">
+                        <h5 class="text-muted fw-semibold mb-3 small">CREDENCIAIS DE ACESSO</h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="email" class="form-label text-muted small fw-semibold">E-MAIL INSTITUCIONAL</label>
+                                <input type="email" 
+                                       class="form-control @error('email') is-invalid @enderror" 
+                                       id="email" 
+                                       name="email" 
+                                       value="{{ old('email') }}" 
+                                       placeholder="contato@ong.org"
+                                       required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="password" 
-                                           class="form-control @error('password') is-invalid @enderror" 
-                                           id="password" 
-                                           name="password" 
-                                           placeholder="Senha"
-                                           required>
-                                    <label for="password">
-                                        <i class="fas fa-key me-2 text-primary"></i>Senha
-                                    </label>
-                                    @error('password')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="col-md-6">
+                                <label for="password" class="form-label text-muted small fw-semibold">SENHA</label>
+                                <input type="password" 
+                                       class="form-control @error('password') is-invalid @enderror" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Mínimo 8 caracteres"
+                                       required>
+                                <small class="text-muted">Mínimo 8 caracteres</small>
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="password" 
-                                           class="form-control" 
-                                           id="password_confirmation" 
-                                           name="password_confirmation" 
-                                           placeholder="Confirmar senha"
-                                           required>
-                                    <label for="password_confirmation">
-                                        <i class="fas fa-check-circle me-2 text-primary"></i>Confirmar senha
-                                    </label>
-                                </div>
+                            <div class="col-md-6">
+                                <label for="password_confirmation" class="form-label text-muted small fw-semibold">CONFIRMAR SENHA</label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password_confirmation" 
+                                       name="password_confirmation" 
+                                       placeholder="Digite a senha novamente"
+                                       required>
                             </div>
                         </div>
                     </div>
@@ -218,31 +175,35 @@
                     {{-- Termos --}}
                     <div class="form-check mb-4">
                         <input class="form-check-input" type="checkbox" id="terms" required>
-                        <label class="form-check-label" for="terms">
-                            Concordo com os <a href="#" class="text-primary">Termos de Uso</a> e 
-                            <a href="#" class="text-primary">Política de Privacidade</a>
+                        <label class="form-check-label small" for="terms">
+                            Concordo com os <a href="#" class="text-decoration-none" style="color: var(--primary-blue);">Termos de Uso</a> e 
+                            <a href="#" class="text-decoration-none" style="color: var(--primary-blue);">Política de Privacidade</a>
                         </label>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary py-2">
                             <i class="fas fa-check-circle me-2"></i>Cadastrar ONG
                         </button>
                     </div>
                 </form>
             </div>
 
-            <div class="card-footer bg-light text-center py-3">
-                <div class="small">
-                    <span class="text-muted">Já tem uma conta?</span>
-                    <a href="{{ route('ong.login') }}" class="text-primary fw-bold ms-2">
-                        <i class="fas fa-sign-in-alt me-1"></i>Fazer login
+            <div class="card-footer bg-white text-center py-4 border-0">
+                <p class="mb-2 text-muted small">Já tem uma conta?</p>
+                <a href="{{ route('ong.login') }}" class="btn btn-outline-primary px-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>Fazer login
+                </a>
+                <div class="mt-3">
+                    <a href="{{ route('choose.role') }}" class="text-muted small text-decoration-none">
+                        <i class="fas fa-arrow-left me-1"></i>Voltar
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
@@ -286,4 +247,3 @@ document.getElementById('password_confirmation').addEventListener('keyup', funct
 });
 </script>
 @endpush
-@endsection

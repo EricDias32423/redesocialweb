@@ -1,130 +1,237 @@
-/* Variáveis */
+/* ========== VARIÁVEIS ========== */
 :root {
-    --primary-color: #28a745;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --warning-color: #ffc107;
-    --info-color: #17a2b8;
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --border-light: #e9ecef;
+    --text-muted: #6c757d;
+    --text-dark: #343a40;
+    --primary-blue: #007bff;
+    --primary-green: #28a745;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.08);
+    --radius: 12px;
 }
 
-/* Estilos Gerais */
+/* ========== GERAL ========== */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    margin: 0;
+    line-height: 1.6;
 }
 
 main {
     flex: 1;
 }
 
-/* Navbar */
+/* ========== NAVBAR ========== */
 .navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    background-color: var(--bg-white) !important;
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-light);
+    padding: 0.75rem 1rem;
 }
 
 .navbar-brand {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 1.5rem;
+    color: var(--text-dark) !important;
+    letter-spacing: -0.02em;
 }
 
-.logo-img{
-    height: 150px;
+.navbar-nav .nav-link {
+    color: var(--text-muted) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: color 0.2s;
 }
 
-/* Cards */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--text-dark) !important;
+}
+
+/* ========== CARDS ========== */
 .card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
 }
 
 .card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
 }
 
 .card-header {
-    display: flex;
-    justify-content: center;
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-light);
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
-/* Botões */
+.card-body {
+    padding: 1.5rem;
+}
+
+/* ========== BOTÕES ========== */
 .btn {
-    border-radius: 5px;
+    border-radius: 30px;
     font-weight: 500;
-    transition: all 0.3s ease;
+    padding: 0.6rem 1.5rem;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-outline-success {
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
 }
 
 .btn-success {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
 }
 
 .btn-success:hover {
     background-color: #218838;
     border-color: #1e7e34;
-    transform: translateY(-2px);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
 }
 
-/* Formulários */
+.btn-outline-primary {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+/* ========== FORMULÁRIOS ========== */
 .form-control, .form-select {
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-    padding: 10px 15px;
-    transition: all 0.3s ease;
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+    padding: 0.75rem 1rem;
+    transition: border 0.2s, box-shadow 0.2s;
+    background-color: var(--bg-white);
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+    outline: none;
 }
 
-/* Badges */
+/* ========== BADGES ========== */
 .badge {
-    padding: 5px 10px;
+    padding: 0.4rem 0.8rem;
     font-weight: 500;
-    border-radius: 5px;
+    border-radius: 30px;
+    background-color: var(--border-light);
+    color: var(--text-dark);
 }
 
-/* Alertas */
+.badge.bg-success {
+    background-color: var(--primary-green) !important;
+    color: white;
+}
+
+.badge.bg-primary {
+    background-color: var(--primary-blue) !important;
+    color: white;
+}
+
+/* ========== ALERTAS ========== */
 .alert {
     border: none;
     border-radius: 10px;
-    padding: 15px 20px;
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-white);
+    border-left: 4px solid transparent;
 }
 
-/* Paginação */
-.pagination {
-    margin-bottom: 0;
+.alert-success {
+    border-left-color: var(--primary-green);
+    background-color: #f0f9f0;
 }
 
-.page-link {
-    color: var(--primary-color);
+.alert-danger {
+    border-left-color: var(--danger-color);
+    background-color: #fef2f2;
+}
+
+/* ========== PAGINAÇÃO ========== */
+.pagination .page-link {
     border: none;
-    padding: 8px 15px;
-    margin: 0 2px;
-    border-radius: 5px;
+    background-color: transparent;
+    color: var(--text-muted);
+    border-radius: 8px;
+    margin: 0 3px;
+    padding: 0.5rem 0.9rem;
 }
 
-.page-item.active .page-link {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+.pagination .page-item.active .page-link {
+    background-color: var(--border-light);
+    color: var(--text-dark);
+    font-weight: 600;
 }
 
-.page-link:hover {
-    background-color: #e9ecef;
-    color: var(--primary-color);
+.pagination .page-link:hover {
+    background-color: var(--border-light);
+    color: var(--text-dark);
 }
 
-/* Animações */
+/* ========== TÍTULOS ========== */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-dark);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* ========== ANIMAÇÕES ========== */
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
@@ -132,21 +239,28 @@ main {
     }
 }
 
-.fade-in {
-    animation: fadeIn 0.5s ease-out;
+/* ========== HOVER CARDS ========== */
+.hover-card {
+    transition: all 0.3s;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
 }
 
-/* Responsividade */
+.hover-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* ========== RESPONSIVIDADE ========== */
 @media (max-width: 768px) {
     .navbar-brand {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
-    
-    .card-header h4 {
-        font-size: 1.2rem;
+    .card-body {
+        padding: 1.25rem;
     }
-    
-    .table {
-        font-size: 0.9rem;
+    .btn {
+        width: 100%;
     }
 }

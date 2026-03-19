@@ -8,9 +8,103 @@ use App\Models\Ong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\RegularUser;
+
+
 
 class PostController extends Controller
 {
+    /**
+ * Display the specified post.
+ */
+public function show(Post $post)
+{
+    // Carrega o relacionamento com a ONG
+    $post->load('ong');
+    
+    // Carrega a contagem de likes (se a tabela existir)
+    $post->loadCount('likes');
+    
+    // Verifica se o usuário atual (regular) já curtiu este post
+    $userLiked = false;
+    $userSupportsOng = false;
+    
+    if (Auth::guard('regular')->check()) {
+        $user = Auth::guard('regular')->user();
+        
+        // Verifica se o usuário já curtiu este post
+        if ($post->relationLoaded('likes')) {
+            $userLiked = $post->likes()
+                ->where('likable_id', $user->id)
+                ->where('likable_type', RegularUser::class)
+                ->exists();
+        }
+        
+        // Verifica se o usuário apoia esta ONG
+        $userSupportsOng = $user->supportedOngs()
+            ->where('ong_id', $post->ong_id)
+            ->exists();
+    }
+    
+    // Se for ONG logada, verifica se curtiu
+    if (Auth::guard('ong')->check()) {
+        $ong = Auth::guard('ong')->user();
+        if ($post->relationLoaded('likes')) {
+            $userLiked = $post->likes()
+                ->where('likable_id', $ong->id)
+                ->where('likable_type', Ong::class)
+                ->exists();
+        }
+    }
+    
+    return view('posts.show', compact('post', 'userLiked', 'userSupportsOng'));
+}
+   public function like(Request $request, Post $post)
+{
+    // Verifica se o usuário está logado (qualquer guard)
+        if (!Auth::check() && !Auth::guard('regular')->check() && !Auth::guard('ong')->check()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthenticated.'
+        ], 401);
+    }
+
+    $user = null;
+    $userType = null;
+
+    if (Auth::guard('regular')->check()) {
+        $user = Auth::guard('regular')->user();
+        $userType = RegularUser::class;
+    } elseif (Auth::guard('ong')->check()) {
+        $user = Auth::guard('ong')->user();
+        $userType = Ong::class;
+    }
+
+    // Verifica se já curtiu
+    $existingLike = $post->likes()
+        ->where('likable_id', $user->id)
+        ->where('likable_type', $userType)
+        ->first();
+
+    if ($existingLike) {
+        // Já curtiu → remove (descurtir)
+        $existingLike->delete();
+        $liked = false;
+    } else {
+        // Não curtiu → adiciona
+        $post->likes()->create([
+            'likable_id' => $user->id,
+            'likable_type' => $userType,
+        ]);
+        $liked = true;
+    }
+
+    return response()->json([
+        'success' => true,
+        'liked' => $liked,
+        'count' => $post->likes()->count()
+    ]);
+}
     /**
      * Display a listing of the posts (Feed público)
      */
@@ -80,27 +174,7 @@ class PostController extends Controller
             ->with('success', 'Post criado com sucesso!');
     }
 
-    /**
-     * Display the specified post.
-     */
-    public function show(Post $post)
-    {
-        $post->load('ong');
-        return view('posts.show', compact('post'));
-    }
-
-    /**
-     * Show the form for editing the specified post.
-     */
-    public function edit(Post $post)
-    {
-        if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
-            return redirect()->route('posts.index')
-                ->with('error', 'Você não tem permissão para editar este post.');
-        }
-        
-        return view('posts.edit', compact('post'));
-    }
+   
 
     /**
      * Update the specified post.

@@ -5,16 +5,19 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-10">
-        <div class="card shadow-lg border-0">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-building me-2"></i>Perfil da ONG</h4>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-4">
+                <h4 class="mb-0 fw-bold">
+                    <i class="fas fa-building me-2" style="color: var(--primary-blue);"></i>
+                    Perfil da ONG
+                </h4>
+                <p class="text-muted small mb-0">Gerencie as informações da sua organização</p>
             </div>
 
             <div class="card-body">
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success py-2 mb-4">
                         <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
 
@@ -23,40 +26,48 @@
                     @if($ong->logo)
                         <img src="{{ asset('storage/' . $ong->logo) }}" 
                              alt="Logo da ONG" 
-                             class="rounded-circle img-thumbnail"
-                             style="width: 150px; height: 150px; object-fit: cover;">
+                             class="rounded-circle border"
+                             style="width: 120px; height: 120px; object-fit: cover;">
                     @else
-                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center"
-                             style="width: 150px; height: 150px;">
-                            <i class="fas fa-building text-white fa-4x"></i>
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center"
+                             style="width: 120px; height: 120px;">
+                            <i class="fas fa-building fa-3x" style="color: var(--primary-blue);"></i>
                         </div>
                     @endif
                 </div>
 
                 {{-- Abas de navegação --}}
-                <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+                <ul class="nav nav-tabs border-0 mb-4" id="profileTabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" 
+                        <button class="nav-link active rounded-pill px-4 py-2 me-2" 
+                                style="background-color: transparent; color: var(--text-dark); border: 1px solid var(--border-light);"
+                                id="info-tab" data-bs-toggle="tab" data-bs-target="#info" 
                                 type="button" role="tab">
-                            <i class="fas fa-info-circle me-2"></i>Informações Básicas
+                            <i class="fas fa-info-circle me-2" style="color: var(--primary-blue);"></i>Informações
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" 
+                        <button class="nav-link rounded-pill px-4 py-2 me-2" 
+                                style="background-color: transparent; color: var(--text-dark); border: 1px solid var(--border-light);"
+                                id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" 
                                 type="button" role="tab">
-                            <i class="fas fa-address-book me-2"></i>Contato e Endereço
+                            <i class="fas fa-address-book me-2" style="color: var(--primary-blue);"></i>Contato
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="social-tab" data-bs-toggle="tab" data-bs-target="#social" 
+                        <button class="nav-link rounded-pill px-4 py-2 me-2" 
+                                style="background-color: transparent; color: var(--text-dark); border: 1px solid var(--border-light);"
+                                id="social-tab" data-bs-toggle="tab" data-bs-target="#social" 
                                 type="button" role="tab">
-                            <i class="fas fa-share-alt me-2"></i>Redes Sociais
+                            <i class="fas fa-share-alt me-2" style="color: var(--primary-blue);"></i>Redes
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" 
+                        <button class="nav-link rounded-pill px-4 py-2" 
+                                style="background-color: transparent; color: var(--text-dark); border: 1px solid var(--border-light);"
+                                id="security-tab" data-bs-toggle="tab" data-bs-target="#security" 
                                 type="button" role="tab">
-                            <i class="fas fa-shield-alt me-2"></i>Segurança
+                            <i class="fas fa-shield-alt me-2" style="color: var(--primary-blue);"></i>Segurança
                         </button>
                     </li>
                 </ul>
@@ -68,14 +79,11 @@
                     <div class="tab-content" id="profileTabsContent">
                         {{-- Aba de Informações Básicas --}}
                         <div class="tab-pane fade show active" id="info" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="ong_name" class="form-label">
-                                        <i class="fas fa-tag text-primary me-2"></i>Nome da ONG
-                                    </label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">NOME DA ONG</label>
                                     <input type="text" 
                                            class="form-control @error('ong_name') is-invalid @enderror" 
-                                           id="ong_name" 
                                            name="ong_name" 
                                            value="{{ old('ong_name', $ong->ong_name) }}"
                                            required>
@@ -84,13 +92,10 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="responsible_name" class="form-label">
-                                        <i class="fas fa-user text-primary me-2"></i>Nome do Responsável
-                                    </label>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">RESPONSÁVEL</label>
                                     <input type="text" 
                                            class="form-control @error('responsible_name') is-invalid @enderror" 
-                                           id="responsible_name" 
                                            name="responsible_name" 
                                            value="{{ old('responsible_name', $ong->responsible_name) }}"
                                            required>
@@ -99,13 +104,10 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">
-                                        <i class="fas fa-envelope text-primary me-2"></i>E-mail
-                                    </label>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">E-MAIL</label>
                                     <input type="email" 
                                            class="form-control @error('email') is-invalid @enderror" 
-                                           id="email" 
                                            name="email" 
                                            value="{{ old('email', $ong->email) }}"
                                            required>
@@ -114,13 +116,10 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="cnpj" class="form-label">
-                                        <i class="fas fa-id-card text-primary me-2"></i>CNPJ
-                                    </label>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">CNPJ</label>
                                     <input type="text" 
                                            class="form-control @error('cnpj') is-invalid @enderror" 
-                                           id="cnpj" 
                                            name="cnpj" 
                                            value="{{ old('cnpj', $ong->cnpj) }}"
                                            placeholder="00.000.000/0000-00">
@@ -129,12 +128,9 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-12 mb-3">
-                                    <label for="description" class="form-label">
-                                        <i class="fas fa-align-left text-primary me-2"></i>Descrição da ONG
-                                    </label>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small fw-semibold">DESCRIÇÃO</label>
                                     <textarea class="form-control @error('description') is-invalid @enderror" 
-                                              id="description" 
                                               name="description" 
                                               rows="4">{{ old('description', $ong->description) }}</textarea>
                                     @error('description')
@@ -142,22 +138,24 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-12 mb-3">
-                                    <label for="logo" class="form-label">
-                                        <i class="fas fa-image text-primary me-2"></i>Logo da ONG
-                                    </label>
-                                    <input type="file" 
-                                           class="form-control @error('logo') is-invalid @enderror" 
-                                           id="logo" 
-                                           name="logo" 
-                                           accept="image/*">
-                                    <small class="text-muted">Deixe em branco para manter a logo atual</small>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small fw-semibold">LOGO</label>
+                                    <div class="border rounded p-3 bg-light">
+                                        <input type="file" 
+                                               class="form-control @error('logo') is-invalid @enderror" 
+                                               name="logo" 
+                                               accept="image/*">
+                                        <small class="text-muted d-block mt-2">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Deixe em branco para manter a logo atual. Máx: 2MB
+                                        </small>
+                                    </div>
                                     @error('logo')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                     
-                                    <div id="logo-preview" class="mt-2" style="display: none;">
-                                        <img src="#" alt="Preview" class="img-fluid rounded" style="max-height: 100px;">
+                                    <div id="logo-preview" class="mt-2 text-center" style="display: none;">
+                                        <img src="#" alt="Preview" class="img-fluid rounded border" style="max-height: 100px;">
                                     </div>
                                 </div>
                             </div>
@@ -165,14 +163,11 @@
 
                         {{-- Aba de Contato e Endereço --}}
                         <div class="tab-pane fade" id="contact" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="phone" class="form-label">
-                                        <i class="fas fa-phone text-primary me-2"></i>Telefone
-                                    </label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">TELEFONE</label>
                                     <input type="text" 
                                            class="form-control @error('phone') is-invalid @enderror" 
-                                           id="phone" 
                                            name="phone" 
                                            value="{{ old('phone', $ong->phone) }}"
                                            placeholder="(00) 00000-0000">
@@ -181,13 +176,10 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="website" class="form-label">
-                                        <i class="fas fa-globe text-primary me-2"></i>Website
-                                    </label>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">WEBSITE</label>
                                     <input type="url" 
                                            class="form-control @error('website') is-invalid @enderror" 
-                                           id="website" 
                                            name="website" 
                                            value="{{ old('website', $ong->website) }}"
                                            placeholder="https://www.exemplo.com">
@@ -196,13 +188,10 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-12 mb-3">
-                                    <label for="address" class="form-label">
-                                        <i class="fas fa-map-marker-alt text-primary me-2"></i>Endereço
-                                    </label>
+                                <div class="col-12">
+                                    <label class="form-label text-muted small fw-semibold">ENDEREÇO</label>
                                     <input type="text" 
                                            class="form-control @error('address') is-invalid @enderror" 
-                                           id="address" 
                                            name="address" 
                                            value="{{ old('address', $ong->address) }}"
                                            placeholder="Rua, número, bairro, cidade - UF">
@@ -215,108 +204,89 @@
 
                         {{-- Aba de Redes Sociais --}}
                         <div class="tab-pane fade" id="social" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="facebook" class="form-label">
-                                        <i class="fab fa-facebook text-primary me-2"></i>Facebook
-                                    </label>
-                                    <input type="url" 
-                                           class="form-control @error('facebook') is-invalid @enderror" 
-                                           id="facebook" 
-                                           name="facebook" 
-                                           value="{{ old('facebook', $ong->social_media['facebook'] ?? '') }}"
-                                           placeholder="https://facebook.com/suaong">
-                                    @error('facebook')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">FACEBOOK</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="fab fa-facebook text-primary"></i></span>
+                                        <input type="url" 
+                                               class="form-control @error('facebook') is-invalid @enderror" 
+                                               name="facebook" 
+                                               value="{{ old('facebook', $ong->social_media['facebook'] ?? '') }}"
+                                               placeholder="https://facebook.com/suaong">
+                                    </div>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="instagram" class="form-label">
-                                        <i class="fab fa-instagram text-primary me-2"></i>Instagram
-                                    </label>
-                                    <input type="url" 
-                                           class="form-control @error('instagram') is-invalid @enderror" 
-                                           id="instagram" 
-                                           name="instagram" 
-                                           value="{{ old('instagram', $ong->social_media['instagram'] ?? '') }}"
-                                           placeholder="https://instagram.com/suaong">
-                                    @error('instagram')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">INSTAGRAM</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="fab fa-instagram text-danger"></i></span>
+                                        <input type="url" 
+                                               class="form-control @error('instagram') is-invalid @enderror" 
+                                               name="instagram" 
+                                               value="{{ old('instagram', $ong->social_media['instagram'] ?? '') }}"
+                                               placeholder="https://instagram.com/suaong">
+                                    </div>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="twitter" class="form-label">
-                                        <i class="fab fa-twitter text-primary me-2"></i>Twitter
-                                    </label>
-                                    <input type="url" 
-                                           class="form-control @error('twitter') is-invalid @enderror" 
-                                           id="twitter" 
-                                           name="twitter" 
-                                           value="{{ old('twitter', $ong->social_media['twitter'] ?? '') }}"
-                                           placeholder="https://twitter.com/suaong">
-                                    @error('twitter')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">TWITTER</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white"><i class="fab fa-twitter text-info"></i></span>
+                                        <input type="url" 
+                                               class="form-control @error('twitter') is-invalid @enderror" 
+                                               name="twitter" 
+                                               value="{{ old('twitter', $ong->social_media['twitter'] ?? '') }}"
+                                               placeholder="https://twitter.com/suaong">
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Aba de Segurança --}}
                         <div class="tab-pane fade" id="security" role="tabpanel">
-                            <div class="alert alert-info">
+                            <div class="alert alert-info border-0 bg-info bg-opacity-10 text-info py-2 mb-3">
                                 <i class="fas fa-info-circle me-2"></i>
                                 Preencha apenas se desejar alterar sua senha.
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-12 mb-3">
-                                    <label for="current_password" class="form-label">
-                                        <i class="fas fa-lock text-primary me-2"></i>Senha Atual
-                                    </label>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label text-muted small fw-semibold">SENHA ATUAL</label>
                                     <input type="password" 
                                            class="form-control @error('current_password') is-invalid @enderror" 
-                                           id="current_password" 
                                            name="current_password">
                                     @error('current_password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="new_password" class="form-label">
-                                        <i class="fas fa-key text-primary me-2"></i>Nova Senha
-                                    </label>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">NOVA SENHA</label>
                                     <input type="password" 
                                            class="form-control @error('new_password') is-invalid @enderror" 
-                                           id="new_password" 
                                            name="new_password">
-                                    @error('new_password')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label for="new_password_confirmation" class="form-label">
-                                        <i class="fas fa-check-circle text-primary me-2"></i>Confirmar Nova Senha
-                                    </label>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-semibold">CONFIRMAR SENHA</label>
                                     <input type="password" 
                                            class="form-control" 
-                                           id="new_password_confirmation" 
                                            name="new_password_confirmation">
                                 </div>
+                                @error('new_password')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>Salvar Alterações
-                        </button>
-                        
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                             <i class="fas fa-trash me-2"></i>Excluir Conta
+                        </button>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-save me-2"></i>Salvar Alterações
                         </button>
                     </div>
                 </form>
@@ -328,15 +298,15 @@
 {{-- Modal de exclusão --}}
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-danger text-white border-0">
                 <h5 class="modal-title">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Excluir Conta da ONG
+                    <i class="fas fa-exclamation-triangle me-2"></i>Excluir Conta
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="text-danger">
+                <p class="text-danger mb-3">
                     <strong>Atenção!</strong> Esta ação é irreversível. Todos os seus posts, comentários e dados serão permanentemente excluídos.
                 </p>
                 
@@ -345,20 +315,17 @@
                     @method('DELETE')
                     
                     <div class="mb-3">
-                        <label for="delete_password" class="form-label">
-                            <i class="fas fa-lock me-2"></i>Digite sua senha para confirmar:
-                        </label>
+                        <label class="form-label text-muted small fw-semibold">CONFIRME SUA SENHA</label>
                         <input type="password" 
                                class="form-control @error('password') is-invalid @enderror" 
-                               id="delete_password" 
                                name="password" 
                                required>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Cancelar
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cancelar
                 </button>
                 <button type="submit" form="deleteForm" class="btn btn-danger">
                     <i class="fas fa-trash me-2"></i>Sim, excluir conta

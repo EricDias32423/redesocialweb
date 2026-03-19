@@ -11,22 +11,18 @@ use App\Http\Controllers\Dashboard\OngDashboardController;
 use App\Http\Controllers\Regular\OngController as RegularOngController;
 use App\Http\Controllers\CommentController;
 
-Route::get('/urgente', function() {
-    return "🚀 Rota de emergência funcionou!";
+// ===========================================
+// ROTAS DE COMENTÁRIOS (qualquer usuário logado)
+// ===========================================
+Route::middleware('auth:regular,ong')->group(function () {
+    Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    
+    // Rota de like
+    Route::post('/posts/{post}/like', [App\Http\Controllers\Web\PostController::class, 'like'])->name('posts.like');
 });
-
-
-Route::get('/teste-simples', function() {
-    return "<h1>FUNCIONOU!</h1><p>Se você está vendo isso, o Laravel está funcionando.</p>";
-});
-
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
 // ===========================================
 // ROTAS PÚBLICAS
 // ===========================================
@@ -81,6 +77,7 @@ Route::prefix('regular')->name('regular.')->group(function () {
         Route::delete('/ongs/{ong}/unsupport', [RegularOngController::class, 'unsupport'])->name('ongs.unsupport');
         
         // Comentários
+        Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
         Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
         Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -119,9 +116,10 @@ Route::prefix('ong')->name('ong.')->group(function () {
         Route::delete('/profile/logo', [OngProfileController::class, 'removeLogo'])->name('profile.logo.remove');
         
         // Comentários (se ONGs puderem comentar)
-        Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
-        Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
-        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     });
 });
 
@@ -142,3 +140,4 @@ Route::middleware('auth:ong')->group(function () {
 // ===========================================
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
+

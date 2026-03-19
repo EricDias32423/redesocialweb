@@ -3,76 +3,74 @@
 @section('title', 'Login - ONG')
 
 @section('content')
-<div class="row justify-content-center">
+<div class="row justify-content-center fade-in">
     <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-0 rounded-lg mt-5">
-            <div class="card-header bg-primary text-white text-center py-4">
-                <h3 class="mb-0">
-                    <i class="fas fa-building me-2"></i>Login - ONG
-                </h3>
-                <p class="text-white-50 mb-0 small">Acesse sua conta institucional</p>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white text-center py-4 border-0">
+                <div class="mb-3">
+                    <div class="rounded-circle bg-light d-inline-flex p-3">
+                        <i class="fas fa-building fa-3x" style="color: var(--primary-blue);"></i>
+                    </div>
+                </div>
+                <h4 class="mb-1 fw-bold">Bem-vinda, ONG</h4>
+                <p class="text-muted small">Acesse sua conta institucional</p>
             </div>
-            
-            <div class="card-body p-4">
+
+            <div class="card-body px-4 py-3">
                 <form method="POST" action="{{ route('ong.login') }}">
                     @csrf
-
-                    <div class="form-floating mb-3">
+                    
+                    <div class="mb-4">
+                        <label for="email" class="form-label text-muted small fw-semibold">E-MAIL INSTITUCIONAL</label>
                         <input type="email" 
                                class="form-control @error('email') is-invalid @enderror" 
                                id="email" 
                                name="email" 
-                               placeholder="nome@ong.com"
                                value="{{ old('email') }}" 
+                               placeholder="contato@ong.org"
                                required 
                                autofocus>
-                        <label for="email">
-                            <i class="fas fa-envelope me-2 text-primary"></i>E-mail
-                        </label>
                         @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="form-floating mb-3">
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-muted small fw-semibold">SENHA</label>
                         <input type="password" 
                                class="form-control @error('password') is-invalid @enderror" 
                                id="password" 
                                name="password" 
-                               placeholder="Senha"
+                               placeholder="••••••••"
                                required>
-                        <label for="password">
-                            <i class="fas fa-lock me-2 text-primary"></i>Senha
-                        </label>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                        <label class="form-check-label" for="remember">
-                            <i class="far fa-check-square me-1"></i>Lembrar-me
-                        </label>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                            <label class="form-check-label small" for="remember">Lembrar-me</label>
+                        </div>
+                        <a href="#" class="small text-decoration-none" style="color: var(--primary-blue);">Esqueceu a senha?</a>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary py-2">
                             <i class="fas fa-sign-in-alt me-2"></i>Entrar
                         </button>
                     </div>
                 </form>
             </div>
 
-            <div class="card-footer bg-light text-center py-3">
-                <div class="small">
-                    <span class="text-muted">Ainda não tem uma conta?</span>
-                    <a href="{{ route('ong.register') }}" class="text-primary fw-bold ms-2">
-                        <i class="fas fa-plus-circle me-1"></i>Registrar ONG
-                    </a>
-                </div>
-                <div class="small mt-2">
-                    <a href="{{ route('choose.role') }}" class="text-muted">
+            <div class="card-footer bg-white text-center py-4 border-0">
+                <p class="mb-2 text-muted small">Ainda não tem uma conta?</p>
+                <a href="{{ route('ong.register') }}" class="btn btn-outline-primary px-4">
+                    <i class="fas fa-plus-circle me-2"></i>Registrar ONG
+                </a>
+                <div class="mt-3">
+                    <a href="{{ route('choose.role') }}" class="text-muted small text-decoration-none">
                         <i class="fas fa-arrow-left me-1"></i>Voltar
                     </a>
                 </div>

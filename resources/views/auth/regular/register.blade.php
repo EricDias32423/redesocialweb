@@ -3,47 +3,54 @@
 @section('title', 'Cadastro - Usuário')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-lg">
-            <div class="card-header bg-success text-white text-center py-3">
-                <h4 class="mb-0">
-                    <i class="fas fa-user-plus me-2"></i>Cadastro - Usuário Comum
-                </h4>
+<div class="row justify-content-center fade-in">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white text-center py-4 border-0">
+                <div class="mb-3">
+                    <div class="rounded-circle bg-light d-inline-flex p-3">
+                        <i class="fas fa-user-plus fa-3x" style="color: var(--primary-green);"></i>
+                    </div>
+                </div>
+                <h4 class="mb-1 fw-bold">Criar nova conta</h4>
+                <p class="text-muted small">Preencha os dados para se cadastrar</p>
             </div>
-            <div class="card-body p-4">
+
+            <div class="card-body px-4 py-3">
                 <form method="POST" action="{{ route('regular.register') }}" enctype="multipart/form-data">
                     @csrf
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Nome Completo</label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label text-muted small fw-semibold">NOME COMPLETO</label>
                             <input type="text" 
                                    class="form-control @error('name') is-invalid @enderror" 
                                    id="name" 
                                    name="name" 
                                    value="{{ old('name') }}" 
+                                   placeholder="Seu nome completo"
                                    required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">E-mail</label>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label text-muted small fw-semibold">E-MAIL</label>
                             <input type="email" 
                                    class="form-control @error('email') is-invalid @enderror" 
                                    id="email" 
                                    name="email" 
                                    value="{{ old('email') }}" 
+                                   placeholder="seu@email.com"
                                    required>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="cpf" class="form-label">CPF</label>
+                        <div class="col-md-6">
+                            <label for="cpf" class="form-label text-muted small fw-semibold">CPF</label>
                             <input type="text" 
                                    class="form-control @error('cpf') is-invalid @enderror" 
                                    id="cpf" 
@@ -55,8 +62,8 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="birth_date" class="form-label">Data de Nascimento</label>
+                        <div class="col-md-6">
+                            <label for="birth_date" class="form-label text-muted small fw-semibold">DATA DE NASCIMENTO</label>
                             <input type="date" 
                                    class="form-control @error('birth_date') is-invalid @enderror" 
                                    id="birth_date" 
@@ -67,8 +74,8 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="phone" class="form-label">Telefone</label>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label text-muted small fw-semibold">TELEFONE</label>
                             <input type="text" 
                                    class="form-control @error('phone') is-invalid @enderror" 
                                    id="phone" 
@@ -80,58 +87,58 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="avatar" class="form-label">Foto de Perfil</label>
+                        <div class="col-md-6">
+                            <label for="avatar" class="form-label text-muted small fw-semibold">FOTO DE PERFIL</label>
                             <input type="file" 
                                    class="form-control @error('avatar') is-invalid @enderror" 
                                    id="avatar" 
                                    name="avatar">
+                            <small class="text-muted">Opcional</small>
                             @error('avatar')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">Senha</label>
+                        <div class="col-md-6">
+                            <label for="password" class="form-label text-muted small fw-semibold">SENHA</label>
                             <input type="password" 
                                    class="form-control @error('password') is-invalid @enderror" 
                                    id="password" 
                                    name="password" 
+                                   placeholder="Mínimo 8 caracteres"
                                    required>
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="password_confirmation" class="form-label">Confirmar Senha</label>
+                        <div class="col-md-6">
+                            <label for="password_confirmation" class="form-label text-muted small fw-semibold">CONFIRMAR SENHA</label>
                             <input type="password" 
                                    class="form-control" 
                                    id="password_confirmation" 
                                    name="password_confirmation" 
+                                   placeholder="Digite a senha novamente"
                                    required>
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2 mt-3">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i>Cadastrar
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success py-2">
+                            <i class="fas fa-check-circle me-2"></i>Criar conta
                         </button>
                     </div>
                 </form>
+            </div>
 
-                <hr class="my-4">
-
-                <div class="text-center">
-                    <p class="mb-2">Já tem uma conta?</p>
-                    <a href="{{ route('regular.login') }}" class="btn btn-outline-success">
-                        <i class="fas fa-sign-in-alt me-2"></i>Fazer login
-                    </a>
-                </div>
-
-                <div class="text-center mt-3">
-                    <a href="{{ route('choose.role') }}" class="text-muted">
-                        <i class="fas fa-arrow-left me-1"></i>Voltar para escolha de tipo
+            <div class="card-footer bg-white text-center py-4 border-0">
+                <p class="mb-2 text-muted small">Já tem uma conta?</p>
+                <a href="{{ route('regular.login') }}" class="btn btn-outline-success px-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>Fazer login
+                </a>
+                <div class="mt-3">
+                    <a href="{{ route('choose.role') }}" class="text-muted small text-decoration-none">
+                        <i class="fas fa-arrow-left me-1"></i>Voltar
                     </a>
                 </div>
             </div>

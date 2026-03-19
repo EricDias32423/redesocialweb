@@ -1,114 +1,116 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', $post->title); ?>
 
-@section('title', $post->title)
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card border-0 shadow-sm">
-            {{-- HEADER COM TÍTULO E BOTÕES --}}
+            
             <div class="card-header bg-white border-0 pt-4">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <h1 class="h3 fw-bold mb-1">{{ $post->title }}</h1>
+                        <h1 class="h3 fw-bold mb-1"><?php echo e($post->title); ?></h1>
                         <div class="d-flex align-items-center gap-3">
                             <span class="small text-muted">
                                 <i class="far fa-calendar me-1"></i>
-                                {{ $post->created_at->format('d/m/Y H:i') }}
+                                <?php echo e($post->created_at->format('d/m/Y H:i')); ?>
+
                             </span>
-                            @if($post->category)
+                            <?php if($post->category): ?>
                                 <span class="badge bg-light text-dark">
-                                    <i class="fas fa-tag me-1"></i>{{ $post->category }}
+                                    <i class="fas fa-tag me-1"></i><?php echo e($post->category); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="d-flex gap-2">
-                        {{-- BOTÕES DE EDIÇÃO (apenas para ONG autora) --}}
-                        @auth('ong')
-                            @if(Auth::guard('ong')->id() === $post->ong_id)
-                                <a href="{{ route('posts.edit', $post) }}" 
+                        
+                        <?php if(auth()->guard('ong')->check()): ?>
+                            <?php if(Auth::guard('ong')->id() === $post->ong_id): ?>
+                                <a href="<?php echo e(route('posts.edit', $post)); ?>" 
                                    class="btn btn-sm btn-outline-warning">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
+                                <form action="<?php echo e(route('posts.destroy', $post)); ?>" method="POST" class="d-inline">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
                                     <button type="submit" 
                                             class="btn btn-sm btn-outline-danger"
                                             onclick="return confirm('Excluir este post?')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
-                            @endif
-                        @endauth
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
 
-            {{-- CORPO DO POST --}}
+            
             <div class="card-body">
-                {{-- INFO DA ONG COM BOTÃO DE APOIAR --}}
+                
                 <div class="d-flex align-items-center justify-content-between mb-4 p-3 bg-light rounded">
                     <div class="d-flex align-items-center">
-                        @if($post->ong->logo)
-                            <img src="{{ asset('storage/' . $post->ong->logo) }}" 
+                        <?php if($post->ong->logo): ?>
+                            <img src="<?php echo e(asset('storage/' . $post->ong->logo)); ?>" 
                                  class="rounded-circle me-3" 
                                  style="width: 50px; height: 50px; object-fit: cover;">
-                        @else
+                        <?php else: ?>
                             <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-3"
                                  style="width: 50px; height: 50px;">
                                 <i class="fas fa-building text-muted"></i>
                             </div>
-                        @endif
+                        <?php endif; ?>
                         <div>
-                            <h5 class="mb-1 fw-semibold">{{ $post->ong->ong_name }}</h5>
+                            <h5 class="mb-1 fw-semibold"><?php echo e($post->ong->ong_name); ?></h5>
                             <p class="mb-0 small text-muted">
-                                <i class="fas fa-envelope me-1"></i>{{ $post->ong->email }}
+                                <i class="fas fa-envelope me-1"></i><?php echo e($post->ong->email); ?>
+
                             </p>
                         </div>
                     </div>
 
-                    {{-- BOTÃO DE APOIAR ONG (apenas para usuários comuns) --}}
-                    @auth('regular')
-                        @if($userSupportsOng)
-                            <form action="{{ route('regular.ongs.unsupport', $post->ong) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
+                    
+                    <?php if(auth()->guard('regular')->check()): ?>
+                        <?php if($userSupportsOng): ?>
+                            <form action="<?php echo e(route('regular.ongs.unsupport', $post->ong)); ?>" method="POST">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('DELETE'); ?>
                                 <button type="submit" class="btn btn-outline-danger">
                                     <i class="fas fa-heart-broken me-2"></i>Deixar de apoiar
                                 </button>
                             </form>
-                        @else
-                            <form action="{{ route('regular.ongs.support', $post->ong) }}" method="POST">
-                                @csrf
+                        <?php else: ?>
+                            <form action="<?php echo e(route('regular.ongs.support', $post->ong)); ?>" method="POST">
+                                <?php echo csrf_field(); ?>
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-heart me-2"></i>Apoiar ONG
                                 </button>
                             </form>
-                        @endif
-                    @endauth
+                        <?php endif; ?>
+                    <?php endif; ?>
                 </div>
 
-                {{-- IMAGEM DO POST --}}
-                @if($post->image)
+                
+                <?php if($post->image): ?>
                     <div class="text-center mb-4">
-                        <img src="{{ asset('storage/' . $post->image) }}" 
+                        <img src="<?php echo e(asset('storage/' . $post->image)); ?>" 
                              class="img-fluid rounded" 
                              style="max-height: 400px;">
                     </div>
-                @endif
+                <?php endif; ?>
 
-                {{-- CONTEÚDO DO POST --}}
+                
                 <div class="post-content">
-                    {!! nl2br(e($post->content)) !!}
+                    <?php echo nl2br(e($post->content)); ?>
+
                 </div>
 
                 <hr class="my-4">
 
-                {{-- SEÇÃO DE INTERAÇÃO (Curtir/Compartilhar/Voluntariar) --}}
-                @auth('regular')
+                
+                <?php if(auth()->guard('regular')->check()): ?>
                     <div class="bg-light rounded p-4 mb-4">
                         <h5 class="fw-semibold mb-3">
                             <i class="fas fa-hand-holding-heart me-2" style="color: var(--primary-green);"></i>
@@ -118,23 +120,23 @@
                             Escolha como deseja participar:
                         </p>
                         <div class="row g-2">
-                            {{-- BOTÃO DE CURTIR (movido para cá) --}}
+                            
                             <div class="col-md-4">
                                 <button class="btn btn-outline-danger w-100" 
-                                        onclick="likePost({{ $post->id }})">
+                                        onclick="likePost(<?php echo e($post->id); ?>)">
                                     <i class="fas fa-heart me-2"></i>
-                                    Curtir ({{ $post->likes_count ?? 0 }})
+                                    Curtir (<?php echo e($post->likes_count ?? 0); ?>)
                                 </button>
                             </div>
                             
-                            {{-- BOTÃO DE COMPARTILHAR --}}
+                            
                             <div class="col-md-4">
                                 <button class="btn btn-outline-primary w-100" onclick="sharePost()">
                                     <i class="fas fa-share me-2"></i>Compartilhar
                                 </button>
                             </div>
                             
-                            {{-- BOTÃO DE VOLUNTARIADO (desabilitado) --}}
+                            
                             <div class="col-md-4">
                                 <button class="btn btn-outline-secondary w-100" 
                                         disabled
@@ -144,17 +146,17 @@
                             </div>
                         </div>
                     </div>
-                @endauth
+                <?php endif; ?>
 
-                {{-- SEÇÃO DE COMENTÁRIOS --}}
+                
                 <div class="comments-section">
                     <h5 class="fw-semibold mb-4">
                         <i class="fas fa-comments me-2" style="color: var(--primary-blue);"></i>
                         Comentários
                     </h5>
                     
-                    @auth('regular')
-                        <form class="mb-4" onsubmit="submitComment(event, {{ $post->id }})">
+                    <?php if(auth()->guard('regular')->check()): ?>
+                        <form class="mb-4" onsubmit="submitComment(event, <?php echo e($post->id); ?>)">
                             <div class="mb-3">
                                 <textarea class="form-control" rows="3" 
                                           placeholder="Deixe seu comentário..." required></textarea>
@@ -163,10 +165,10 @@
                                 <i class="fas fa-paper-plane me-2"></i>Comentar
                             </button>
                         </form>
-                    @endauth
+                    <?php endif; ?>
 
-                    @auth('ong')
-                        <form class="mb-4" onsubmit="submitComment(event, {{ $post->id }})">
+                    <?php if(auth()->guard('ong')->check()): ?>
+                        <form class="mb-4" onsubmit="submitComment(event, <?php echo e($post->id); ?>)">
                             <div class="mb-3">
                                 <textarea class="form-control" rows="3" 
                                           placeholder="Deixe seu comentário como ONG..." required></textarea>
@@ -175,19 +177,19 @@
                                 <i class="fas fa-paper-plane me-2"></i>Comentar
                             </button>
                         </form>
-                    @endauth
+                    <?php endif; ?>
 
                     <div class="comments-list" id="comments-list">
-                        {{-- Comentários serão carregados aqui --}}
+                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 .post-content {
     font-size: 1.1rem;
@@ -200,9 +202,9 @@
     cursor: not-allowed;
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 // Curtir post
 
@@ -212,7 +214,7 @@ function likePost(postId) {
     fetch(`/posts/${postId}/like`, {
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
@@ -256,8 +258,8 @@ function likePost(postId) {
 function sharePost() {
     if (navigator.share) {
         navigator.share({
-            title: '{{ $post->title }}',
-            text: '{{ Str::limit(strip_tags($post->content), 100) }}',
+            title: '<?php echo e($post->title); ?>',
+            text: '<?php echo e(Str::limit(strip_tags($post->content), 100)); ?>',
             url: window.location.href
         });
     } else {
@@ -286,7 +288,7 @@ function submitComment(event, postId) {
     fetch(`/comments/${postId}`, {
     method: 'POST',
     headers: {
-        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
         'Content-Type': 'application/json',
         'Accept': 'application/json'  // 👈 IMPORTANTE
     },
@@ -350,4 +352,5 @@ if (data.success) {
     loadComments(postId); // em vez de location.reload()
 }
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\ericl\Downloads\projetas\redesocialweb\resources\views/posts/show.blade.php ENDPATH**/ ?>

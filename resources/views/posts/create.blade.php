@@ -3,18 +3,24 @@
 @section('title', 'Criar Novo Post')
 
 @section('content')
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="card shadow-lg border-0">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Criar Novo Post</h4>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-4">
+                <h4 class="mb-0 fw-bold">
+                    <i class="fas fa-plus-circle me-2" style="color: var(--primary-blue);"></i>
+                    Criar Novo Post
+                </h4>
+                <p class="text-muted small mb-0">Compartilhe novidades com seus apoiadores</p>
             </div>
 
-            <div class="card-body">
+            <div class="card-body pt-2">
                 {{-- Mensagens de erro --}}
                 @if($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
+                    <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger py-2">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Por favor, corrija os seguintes erros:</strong>
+                        <ul class="mb-0 mt-2 small">
                             @foreach($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -26,14 +32,14 @@
                     @csrf
 
                     {{-- Título --}}
-                    <div class="mb-3">
-                        <label for="title" class="form-label fw-bold">Título do Post</label>
+                    <div class="mb-4">
+                        <label for="title" class="form-label text-muted small fw-semibold">TÍTULO DO POST</label>
                         <input type="text"
                                class="form-control @error('title') is-invalid @enderror"
                                id="title"
                                name="title"
                                value="{{ old('title') }}"
-                               placeholder="Digite um título impactante"
+                               placeholder="Ex: Campanha de arrecadação 2026"
                                required>
                         @error('title')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -41,8 +47,8 @@
                     </div>
 
                     {{-- Categoria --}}
-                    <div class="mb-3">
-                        <label for="category" class="form-label fw-bold">Categoria</label>
+                    <div class="mb-4">
+                        <label for="category" class="form-label text-muted small fw-semibold">CATEGORIA</label>
                         <select class="form-select @error('category') is-invalid @enderror"
                                 id="category"
                                 name="category">
@@ -61,8 +67,8 @@
                     </div>
 
                     {{-- Conteúdo --}}
-                    <div class="mb-3">
-                        <label for="content" class="form-label fw-bold">Conteúdo</label>
+                    <div class="mb-4">
+                        <label for="content" class="form-label text-muted small fw-semibold">CONTEÚDO</label>
                         <textarea class="form-control @error('content') is-invalid @enderror"
                                   id="content"
                                   name="content"
@@ -76,31 +82,39 @@
 
                     {{-- Imagem --}}
                     <div class="mb-4">
-                        <label for="image" class="form-label fw-bold">Imagem de destaque (opcional)</label>
-                        <input type="file"
-                               class="form-control @error('image') is-invalid @enderror"
-                               id="image"
-                               name="image"
-                               accept="image/png, image/jpeg, image/jpg, image/gif">
-                        <small class="text-muted">Formatos aceitos: JPG, JPEG, PNG, GIF. Máximo: 2MB</small>
+                        <label for="image" class="form-label text-muted small fw-semibold">IMAGEM DE DESTAQUE</label>
+                        <div class="border rounded p-3 bg-light">
+                            <input type="file"
+                                   class="form-control @error('image') is-invalid @enderror"
+                                   id="image"
+                                   name="image"
+                                   accept="image/png, image/jpeg, image/jpg, image/gif">
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Formatos: JPG, JPEG, PNG, GIF (máx. 2MB)
+                            </small>
+                        </div>
                         @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
 
                         {{-- Preview da imagem --}}
                         <div id="image-preview" class="mt-3 text-center" style="display: none;">
-                            <img src="#" alt="Preview da imagem"
-                                 class="img-fluid rounded border"
-                                 style="max-height: 200px;">
+                            <div class="border rounded p-2">
+                                <img src="#" alt="Preview da imagem"
+                                     class="img-fluid rounded"
+                                     style="max-height: 200px;">
+                                <small class="text-muted d-block mt-1">Preview da imagem</small>
+                            </div>
                         </div>
                     </div>
 
                     {{-- Botões --}}
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ route('ong.dashboard') }}" class="btn btn-outline-secondary">
+                    <div class="d-flex justify-content-between pt-2">
+                        <a href="{{ route('ong.dashboard') }}" class="btn btn-outline-secondary px-4">
                             <i class="fas fa-times me-2"></i>Cancelar
                         </a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary px-4">
                             <i class="fas fa-paper-plane me-2"></i>Publicar Post
                         </button>
                     </div>

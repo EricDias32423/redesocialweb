@@ -1,0 +1,264 @@
+/* paleta azul para ONG (consistente com as telas anteriores) */
+:root {
+    --primary-blue: #0d6efd;
+    --primary-dark: #0b5ed7;
+    --text-dark: #333;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --border-light: #e9ecef;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, .075);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, .1);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background-color: var(--bg-light);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 16px;
+}
+
+/* card dividido igual ao login de usuário */
+.card-split {
+    max-width: 1200px;
+    /* maior para acomodar formulário extenso */
+    width: 100%;
+    background: #fff;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: row;
+    border: none;
+}
+
+/* painel esquerdo azul (mesmo estilo) */
+.brand-panel {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 2.5rem 2rem;
+    flex: 1 1 35%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 0;
+}
+
+.brand-panel h2 {
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+}
+
+.brand-panel .input-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    opacity: 0.9;
+}
+
+.brand-panel .brand-input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0;
+    color: white;
+    padding: 0.5rem 0.25rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.brand-panel .brand-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 300;
+}
+
+.brand-panel .brand-input:focus {
+    outline: none;
+    border-bottom-color: white;
+    box-shadow: none;
+    background: transparent;
+}
+
+.btn-outline-light-brand {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.8rem;
+    border-radius: 40px;
+    width: fit-content;
+    transition: 0.2s;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.btn-outline-light-brand:hover {
+    background: white;
+    color: var(--primary-blue);
+}
+
+/* painel direito formulário */
+.form-panel {
+    flex: 1 1 65%;
+    padding: 2.5rem 2.2rem;
+    background: white;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.form-panel h3 {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 1.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.form-panel .subtitle {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.form-panel h5 {
+    color: var(--primary-blue);
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    border-left: 4px solid var(--primary-blue);
+    padding-left: 0.75rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-panel .form-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.form-panel .form-control,
+.form-panel .form-select {
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+}
+
+.form-panel .form-control:focus,
+.form-panel .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.form-panel textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.btn-cadastrar-ong {
+    background-color: var(--primary-blue);
+    border: none;
+    border-radius: 40px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+    color: white;
+    margin-top: 1rem;
+}
+
+.btn-cadastrar-ong:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-outline-primary {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+    border-radius: 40px;
+    padding: 0.5rem 2rem;
+    font-weight: 500;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-blue);
+    color: white;
+}
+
+.bottom-link {
+    color: var(--primary-blue);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.bottom-link:hover {
+    text-decoration: underline;
+}
+
+/* painel esquerdo elementos */
+.brand-panel hr {
+    opacity: 0.3;
+    margin: 1rem 0 1.5rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.separator-text {
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    margin: 0.5rem 0 0.5rem 0;
+}
+
+.bottom-access {
+    margin-top: 1.8rem;
+}
+
+.bottom-access a {
+    background: transparent;
+    border: 2px solid white;
+    border-radius: 40px;
+    padding: 0.5rem 2rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.bottom-access a:hover {
+    background: white;
+    color: var(--primary-blue);
+}
+
+.brand-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.small-note {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+#logo-preview img {
+    max-height: 100px;
+    border-radius: 10px;
+    margin-top: 8px;
+}
+
+/* responsividade */
+@media (max-width: 900px) {
+    .card-split {
+        flex-direction: column;
+    }
+
+    .form-panel {
+        max-height: none;
+    }
+}

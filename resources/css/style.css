@@ -55,6 +55,10 @@ main {
     color: var(--text-dark) !important;
 }
 
+.logo{
+    height: 40px;
+}
+
 /* ========== CARDS ========== */
 .card {
     background-color: var(--bg-white);

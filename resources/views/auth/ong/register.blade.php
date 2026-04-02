@@ -133,7 +133,7 @@
                 <!-- CREDENCIAIS DE ACESSO -->
                 <h5>CREDENCIAIS DE ACESSO</h5>
                 <div class="row g-3 mb-4">
-                    <div class="col-12">
+                    <div class="form-floating mb-3">
                         <label for="email" class="form-label">E-MAIL INSTITUCIONAL</label>
                         <input type="email"
                             class="form-control @error('email') is-invalid @enderror"
@@ -200,6 +200,7 @@
             </form>
         </div>
     </div>
+    
 
     <!-- scripts de preview e validação (adaptados do original) -->
     <script>

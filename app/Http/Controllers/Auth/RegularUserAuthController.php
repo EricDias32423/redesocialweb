@@ -24,14 +24,19 @@ class RegularUserAuthController extends Controller
             'cpf' => 'nullable|string|unique:regular_users',
             'birth_date' => 'nullable|date',
             'phone' => 'nullable|string',
+            'avatar' => 'required|image|max:3000',
         ]);
 
+        if ($request->hasFile('avatar')) {
+            $validated['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
         $validated['password'] = Hash::make($validated['password']);
-        
+
         $user = RegularUser::create($validated);
-        
+
         Auth::guard('regular')->login($user);
-        
+
         // Redirecionar para o dashboard (NÃO para o profile)
         return redirect()->route('regular.dashboard')
             ->with('success', 'Cadastro realizado com sucesso! Bem-vindo!');
@@ -64,7 +69,7 @@ class RegularUserAuthController extends Controller
         Auth::guard('regular')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect('/');
     }
 }

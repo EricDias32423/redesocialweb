@@ -14,24 +14,20 @@
 <body>
 
     <div class="card-split">
-        <!-- LADO ESQUERDO: azul para ONG, com elementos visuais institucionais -->
+        <!-- LADO ESQUERDO: "CRIA SUA CONTA" (exatamente como a imagem) -->
         <div class="brand-panel">
-            <div class="brand-icon">
-                <h2>Faça acesso e cadastre sua ONG</h2>
-            </div>
+            <h2>"Venha para a nossa rede social e apoie sua ONG com todo coração."</h2>
         </div>
 
-        <!-- LADO DIREITO: formulário de login da ONG (adaptado do original) -->
+        <!-- LADO DIREITO: login funcional (Bem-vindo de volta / formulário) 
+         mantenho exatamente como estava, apenas refinando alinhamentos -->
         <div class="form-panel">
-            <h3>Bem-vinda, ONG</h3>
-            <div class="subtitle">Acesse sua conta institucional</div>
+            <h3>Bem-vindo de volta</h3>
 
             <form method="POST" action="<?php echo e(route('ong.login')); ?>">
                 <?php echo csrf_field(); ?>
 
-                <!-- E-mail institucional -->
-                <div class="mb-4">
-                    <label for="email" class="form-label">E-MAIL INSTITUCIONAL</label>
+                <div class="form-floating mb-3">
                     <input type="email"
                         class="form-control <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -47,6 +43,7 @@ unset($__errorArgs, $__bag); ?>"
                         placeholder="contato@ong.org"
                         required
                         autofocus>
+                    <label for="email">E-mail</label>
                     <?php $__errorArgs = ['email'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -59,9 +56,7 @@ endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
 
-                <!-- Senha -->
-                <div class="mb-4">
-                    <label for="password" class="form-label">SENHA</label>
+                <div class="form-floating mb-2">
                     <input type="password"
                         class="form-control <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -75,6 +70,7 @@ unset($__errorArgs, $__bag); ?>"
                         name="password"
                         placeholder="••••••••"
                         required>
+                    <label for="password">Senha</label>
                     <?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -87,21 +83,19 @@ endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
 
-                <!-- Lembrar-me e esqueceu senha -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="remember-row">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="remember" name="remember" <?php echo e(old('remember') ? 'checked' : ''); ?>>
-                        <label class="form-check-label small" for="remember">Lembrar-me</label>
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label small text-secondary" for="remember">Lembrar-me</label>
                     </div>
-                    <a href="#" class="small text-decoration-none bottom-link">Esqueceu a senha?</a>
+                    <a href="#" class="link-password">Esqueceu a senha?</a>
                 </div>
 
-                <!-- Botão entrar (azul) -->
                 <button type="submit" class="btn-entrar-ong">
                     <i class="fas fa-sign-in-alt me-2"></i>Entrar
                 </button>
 
-                <!-- Link rápido para registro (rodapé do form) -->
+                <!-- link rápido "Ainda não tem conta?" (sutil) -->
                 <p class="text-center text-muted small mt-4 mb-0">
                     Ainda não tem uma conta institucional?
                     <a href="<?php echo e(route('ong.register')); ?>" class="bottom-link">Registrar ONG</a>
@@ -115,6 +109,7 @@ unset($__errorArgs, $__bag); ?>
             </form>
         </div>
     </div>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

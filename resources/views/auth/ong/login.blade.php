@@ -14,24 +14,20 @@
 <body>
 
     <div class="card-split">
-        <!-- LADO ESQUERDO: azul para ONG, com elementos visuais institucionais -->
+        <!-- LADO ESQUERDO: "CRIA SUA CONTA" (exatamente como a imagem) -->
         <div class="brand-panel">
-            <div class="brand-icon">
-                <h2>Faça acesso e cadastre sua ONG</h2>
-            </div>
+            <h2>"Venha para a nossa rede social e apoie sua ONG com todo coração."</h2>
         </div>
 
-        <!-- LADO DIREITO: formulário de login da ONG (adaptado do original) -->
+        <!-- LADO DIREITO: login funcional (Bem-vindo de volta / formulário) 
+         mantenho exatamente como estava, apenas refinando alinhamentos -->
         <div class="form-panel">
-            <h3>Bem-vinda, ONG</h3>
-            <div class="subtitle">Acesse sua conta institucional</div>
+            <h3>Bem-vindo de volta</h3>
 
             <form method="POST" action="{{ route('ong.login') }}">
                 @csrf
 
-                <!-- E-mail institucional -->
-                <div class="mb-4">
-                    <label for="email" class="form-label">E-MAIL INSTITUCIONAL</label>
+                <div class="form-floating mb-3">
                     <input type="email"
                         class="form-control @error('email') is-invalid @enderror"
                         id="email"
@@ -40,40 +36,38 @@
                         placeholder="contato@ong.org"
                         required
                         autofocus>
+                    <label for="email">E-mail</label>
                     @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <!-- Senha -->
-                <div class="mb-4">
-                    <label for="password" class="form-label">SENHA</label>
+                <div class="form-floating mb-2">
                     <input type="password"
                         class="form-control @error('password') is-invalid @enderror"
                         id="password"
                         name="password"
                         placeholder="••••••••"
                         required>
+                    <label for="password">Senha</label>
                     @error('password')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <!-- Lembrar-me e esqueceu senha -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="remember-row">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                        <label class="form-check-label small" for="remember">Lembrar-me</label>
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label small text-secondary" for="remember">Lembrar-me</label>
                     </div>
-                    <a href="#" class="small text-decoration-none bottom-link">Esqueceu a senha?</a>
+                    <a href="#" class="link-password">Esqueceu a senha?</a>
                 </div>
 
-                <!-- Botão entrar (azul) -->
                 <button type="submit" class="btn-entrar-ong">
                     <i class="fas fa-sign-in-alt me-2"></i>Entrar
                 </button>
 
-                <!-- Link rápido para registro (rodapé do form) -->
+                <!-- link rápido "Ainda não tem conta?" (sutil) -->
                 <p class="text-center text-muted small mt-4 mb-0">
                     Ainda não tem uma conta institucional?
                     <a href="{{ route('ong.register') }}" class="bottom-link">Registrar ONG</a>
@@ -87,6 +81,7 @@
             </form>
         </div>
     </div>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

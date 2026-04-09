@@ -55,28 +55,17 @@ Route::prefix('regular')->name('regular.')->group(function () {
 
     // Rotas protegidas (auth)
     Route::middleware('auth:regular')->group(function () {
-        // Logout
         Route::post('/logout', [RegularUserAuthController::class, 'logout'])->name('logout');
-        
-        // Dashboard
         Route::get('/dashboard', [RegularUserDashboardController::class, 'index'])->name('dashboard');
-        
-        // Perfil
         Route::get('/profile', [RegularUserProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [RegularUserProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [RegularUserProfileController::class, 'destroy'])->name('profile.destroy');
-        
-        // Upload de avatar
         Route::post('/profile/avatar', [RegularUserProfileController::class, 'uploadAvatar'])->name('profile.avatar');
         Route::delete('/profile/avatar', [RegularUserProfileController::class, 'removeAvatar'])->name('profile.avatar.remove');
-        
-        // ONGs
         Route::get('/ongs', [RegularOngController::class, 'index'])->name('ongs.index');
         Route::get('/ongs/{ong}', [RegularOngController::class, 'show'])->name('ongs.show');
         Route::post('/ongs/{ong}/support', [RegularOngController::class, 'support'])->name('ongs.support');
         Route::delete('/ongs/{ong}/unsupport', [RegularOngController::class, 'unsupport'])->name('ongs.unsupport');
-        
-        // Comentários
         Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
         Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
         Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
@@ -99,23 +88,15 @@ Route::prefix('ong')->name('ong.')->group(function () {
 
     // Rotas protegidas (auth)
     Route::middleware('auth:ong')->group(function () {
-        // Logout
+
         Route::post('/logout', [OngAuthController::class, 'logout'])->name('logout');
-        
-        // Dashboard
         Route::get('/dashboard', [OngDashboardController::class, 'index'])->name('dashboard');
         Route::get('/statistics', [OngDashboardController::class, 'engagementAnalytics'])->name('statistics');
-        
-        // Perfil
         Route::get('/profile', [OngProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [OngProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [OngProfileController::class, 'destroy'])->name('profile.destroy'); // Corrigido: 'destroy' não 'destro'
-        
-        // Upload de logo
+        Route::delete('/profile', [OngProfileController::class, 'destroy'])->name('profile.destroy'); 
         Route::post('/profile/logo', [OngProfileController::class, 'uploadLogo'])->name('profile.logo');
         Route::delete('/profile/logo', [OngProfileController::class, 'removeLogo'])->name('profile.logo.remove');
-        
-        // Comentários (se ONGs puderem comentar)
     Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
     Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
     Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');

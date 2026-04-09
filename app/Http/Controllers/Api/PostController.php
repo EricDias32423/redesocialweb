@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Ong;
+use App\Models\RegularUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,157 +13,275 @@ use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
 {
     /**
-     * Display a listing of the posts (Feed público)
+     * Display a listing of posts (Feed público)
      */
     public function index(Request $request)
     {
-        $query = Post::with('ong')->latest();
-        
-        if ($request->has('category') && $request->category != '') {
-            $query->where('category', $request->category);
+        try {
+            $query = Post::with('ong')->latest();
+            
+            // Filtro por categoria
+            if ($request->has('category') && $request->category != '') {
+                $query->where('category', $request->category);
+            }
+            
+            // Busca por título ou conteúdo
+            if ($request->has('search') && $request->search != '') {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('content', 'like', "%{$search}%");
+                });
+            }
+            
+            $posts = $query->paginate(10);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $posts
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar posts: ' . $e->getMessage()
+            ], 500);
         }
-        
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
-            });
-        }
-        
-        $posts = $query->paginate(9);
-        $categories = Post::distinct('category')->pluck('category')->filter();
-        
-        return view('posts.index', compact('posts', 'categories'));
     }
 
     /**
-     * Show the form for creating a new post (apenas ONG)
-     */
-    public function create()
-    {
-        if (!Auth::guard('ong')->check()) {
-            return redirect()->route('home')
-                ->with('error', 'Apenas ONGs podem criar posts.');
-        }
-        
-        return view('posts.create');
-    }
-
-    /**
-     * Store a newly created post.
-     */
-    public function store(Request $request)
-    {
-        if (!Auth::guard('ong')->check()) {
-            return redirect()->route('home')
-                ->with('error', 'Apenas ONGs podem criar posts.');
-        }
-
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'category' => 'nullable|string|max:100',
-            'image' => 'nullable|image|max:2048'
-        ]);
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('posts', 'public');
-            $validated['image'] = $path;
-        }
-
-        $validated['ong_id'] = Auth::guard('ong')->id();
-
-        $post = Post::create($validated);
-        
-        return redirect()->route('posts.show', $post)
-            ->with('success', 'Post criado com sucesso!');
-    }
-
-    /**
-     * Display the specified post.
+     * Display the specified post (público)
      */
     public function show(Post $post)
     {
-        $post->load('ong');
-        return view('posts.show', compact('post'));
-    }
-
-    /**
-     * Show the form for editing the specified post.
-     */
-    public function edit(Post $post)
-    {
-        if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
-            return redirect()->route('posts.index')
-                ->with('error', 'Você não tem permissão para editar este post.');
+        try {
+            $post->load('ong');
+            $post->loadCount('likes', 'comments');
+            
+            return response()->json([
+                'success' => true,
+                'data' => $post
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar post: ' . $e->getMessage()
+            ], 500);
         }
-        
-        return view('posts.edit', compact('post'));
     }
 
     /**
-     * Update the specified post.
+     * Store a newly created post (apenas ONG)
+     */
+    public function store(Request $request)
+    {
+        try {
+            // Verificar se é uma ONG
+            if (!Auth::guard('ong')->check()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Apenas ONGs podem criar posts'
+                ], 403);
+            }
+
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'category' => 'nullable|string|max:100',
+                'image' => 'nullable|image|max:2048'
+            ]);
+
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('posts', 'public');
+                $validated['image'] = $path;
+            }
+
+            $validated['ong_id'] = Auth::guard('ong')->id();
+
+            $post = Post::create($validated);
+            $post->load('ong');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post criado com sucesso!',
+                'data' => $post
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao criar post: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update the specified post (apenas ONG dona)
      */
     public function update(Request $request, Post $post)
     {
-        if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
-            return redirect()->route('posts.index')
-                ->with('error', 'Você não tem permissão para editar este post.');
-        }
-
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'content' => 'sometimes|required|string',
-            'category' => 'nullable|string|max:100',
-            'image' => 'nullable|image|max:2048'
-        ]);
-
-        if ($request->hasFile('image')) {
-            if ($post->image) {
-                Storage::disk('public')->delete($post->image);
+        try {
+            // Verificar se é a ONG dona do post
+            if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você não tem permissão para editar este post'
+                ], 403);
             }
-            $path = $request->file('image')->store('posts', 'public');
-            $validated['image'] = $path;
-        }
 
-        $post->update($validated);
-        
-        return redirect()->route('posts.show', $post)
-            ->with('success', 'Post atualizado com sucesso!');
+            $validated = $request->validate([
+                'title' => 'sometimes|required|string|max:255',
+                'content' => 'sometimes|required|string',
+                'category' => 'nullable|string|max:100',
+                'image' => 'nullable|image|max:2048'
+            ]);
+
+            if ($request->hasFile('image')) {
+                if ($post->image) {
+                    Storage::disk('public')->delete($post->image);
+                }
+                $path = $request->file('image')->store('posts', 'public');
+                $validated['image'] = $path;
+            }
+
+            $post->update($validated);
+            $post->load('ong');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post atualizado com sucesso!',
+                'data' => $post
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao atualizar post: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Remove the specified post.
+     * Remove the specified post (apenas ONG dona)
      */
     public function destroy(Post $post)
     {
-        if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
-            return redirect()->route('posts.index')
-                ->with('error', 'Você não tem permissão para deletar este post.');
-        }
+        try {
+            if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você não tem permissão para deletar este post'
+                ], 403);
+            }
 
-        if ($post->image) {
-            Storage::disk('public')->delete($post->image);
-        }
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
 
-        $post->delete();
-        
-        // CORRIGIDO: Redirecionar para 'my-posts' que existe
-        return redirect()->route('my-posts')
-            ->with('success', 'Post deletado com sucesso!');
+            // Deletar curtidas e comentários associados
+            $post->likes()->delete();
+            $post->comments()->delete();
+            $post->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post deletado com sucesso!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao deletar post: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Display user's posts (apenas ONG)
+     * Get user's posts (requer token)
      */
-    public function myPosts()
+    public function myPosts(Request $request)
     {
-        if (!Auth::guard('ong')->check()) {
-            return redirect()->route('home');
+        try {
+            $user = $request->user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuário não autenticado'
+                ], 401);
+            }
+            
+            // Se for ONG, busca posts da ONG
+            if ($user instanceof Ong) {
+                $posts = $user->posts()->latest()->paginate(10);
+            } else {
+                // Se for usuário comum, busca posts que ele curtiu ou comentou
+                $posts = Post::whereHas('likes', function($q) use ($user) {
+                    $q->where('likable_id', $user->id);
+                })->latest()->paginate(10);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => $posts
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar seus posts: ' . $e->getMessage()
+            ], 500);
         }
-        
-        $posts = Auth::guard('ong')->user()->posts()->latest()->paginate(10);
-        return view('posts.my-posts', compact('posts'));
+    }
+
+    /**
+     * Like or unlike a post
+     */
+    public function like(Request $request, Post $post)
+    {
+        try {
+            $user = $request->user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuário não autenticado'
+                ], 401);
+            }
+            
+            $userType = get_class($user);
+            
+            $existingLike = $post->likes()
+                ->where('likable_id', $user->id)
+                ->where('likable_type', $userType)
+                ->first();
+            
+            if ($existingLike) {
+                $existingLike->delete();
+                $liked = false;
+            } else {
+                $post->likes()->create([
+                    'likable_id' => $user->id,
+                    'likable_type' => $userType,
+                ]);
+                $liked = true;
+            }
+            
+            return response()->json([
+                'success' => true,
+                'liked' => $liked,
+                'count' => $post->likes()->count()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao processar curtida: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

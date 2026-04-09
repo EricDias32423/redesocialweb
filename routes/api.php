@@ -8,16 +8,15 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\OngController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\StatsController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\UploadController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-*/
+Route::get('/health', function() {
+    return response()->json(['status' => 'ok']);
+});
 
-// ===========================================
-// ROTAS PÚBLICAS DA API
-// ===========================================
 
 // Autenticação
 Route::post('/register', [AuthController::class, 'register']);
@@ -30,7 +29,6 @@ Route::get('/posts/{post}', [PostController::class, 'show']);
 // Comentários públicos
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
 Route::get('/comments/{comment}', [CommentController::class, 'show']);
-Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
 
 // ONGs públicas
 Route::get('/ongs', [OngController::class, 'index']);
@@ -47,7 +45,7 @@ Route::get('/stats/overview', [StatsController::class, 'overview']);
 Route::get('/stats/categories', [StatsController::class, 'categories']);
 
 // ===========================================
-// ROTAS PROTEGIDAS DA API (requerem token Sanctum)
+// ROTAS PROTEGIDAS (requerem token Sanctum)
 // ===========================================
 Route::middleware('auth:sanctum')->group(function () {
     
@@ -64,7 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/user/avatar', [UserController::class, 'removeAvatar']);
     Route::get('/user/activities', [UserController::class, 'activities']);
     
-    // Posts (CRUD completo)
+    // Posts (CRUD)
     Route::get('/my-posts', [PostController::class, 'myPosts']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::put('/posts/{post}', [PostController::class, 'update']);
@@ -124,7 +122,7 @@ Route::middleware(['auth:sanctum', 'ability:ong'])->prefix('ong')->name('api.ong
 });
 
 // ===========================================
-// ROTAS DE TESTE (apenas em desenvolvimento)
+// ROTAS DE TESTE (apenas desenvolvimento)
 // ===========================================
 if (app()->environment('local')) {
     Route::get('/test', function () {

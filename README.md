@@ -1,59 +1,121 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+📌 Sobre o projeto
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API RESTful desenvolvida em Laravel para gerenciar uma rede social de ONGs, fornecendo endpoints para autenticação, cadastro de usuários, posts, comentários e curtidas.
+🎯 Objetivo (MVP)
 
-## About Laravel
+    Cadastro de dois tipos de usuários (ONGs e Usuários Comuns)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    Autenticação via token (Laravel Sanctum)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+    CRUD de posts (apenas ONGs)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    Sistema de curtidas e comentários
 
-## Learning Laravel
+    Relacionamento entre ONGs e apoiadores
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+    Dashboard com estatísticas para ONGs
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+🚀 Tecnologias utilizadas
 
-## Laravel Sponsors
+    PHP 8.2.12
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    Laravel 12.54.1
 
-### Premium Partners
+    MySQL / MariaDB
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+    Laravel Sanctum (autenticação via token)
 
-## Contributing
+    Laravel CORS
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    Composer
 
-## Code of Conduct
+📦 Estrutura do Banco de Dados
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    Principais tabelas
 
-## Security Vulnerabilities
+    Tabela	                   Descrição
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+regular_users              Usuários comuns da plataforma
+ongs                       Organizações (ONGs)
+posts                      Publicações criadas pelas ONGs
+comments                   Comentários (polimórfico: usuários e ONGs)
+likes                      Curtidas (polimórfico)
+ong_user                   Relacionamento ONG × Usuário (apoiadores)
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+Relacionamentos
+    ongs (1) ─── (N) posts
+    posts (1) ─── (N) comments
+    posts (1) ─── (N) likes
+    regular_users (N) ─── (N) ongs (através de ong_user)
+
+
+⚙️ Instalação e configuração
+    Pré-requisitos
+
+    PHP >= 8.2
+
+    Composer
+
+    MySQL ou MariaDB
+
+
+
+Passos para instalação
+ No bash
+    # Clonar repositório
+git clone https://github.com/EricDias32423/redesocialweb.git
+cd ongs-backend
+
+# Instalar dependências
+composer install
+
+# Copiar arquivo de ambiente
+cp .env.example .env
+
+# Gerar chave da aplicação
+php artisan key:generate
+
+# Configurar banco de dados no .env
+# DB_DATABASE=rede_social_ongs
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# Executar migrations
+php artisan migrate
+
+# Criar link simbólico para armazenamento
+php artisan storage:link
+
+# Iniciar servidor
+php artisan serve --host=0.0.0.0 --port=8000
+
+
+
+
+🔒 Autenticação : A API utiliza Laravel Sanctum para autenticação via token.
+
+
+
+
+✅ Códigos de Resposta
+Código  	Significado
+200         	OK
+201     	Created (recurso criado)
+401     	Unauthorized (não autenticado)
+403     	Forbidden (sem permissão)
+404     	Not Found
+422	        Unprocessable Entity (erro de validação)
+500	        Internal Server Error
+
+
+
+
+
+
+
+Autores
+Eric Luciano M. Dias
+Guilherme de Oliveira Pinheiro

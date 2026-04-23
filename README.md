@@ -110,7 +110,71 @@ Código  	Significado
 422	        Unprocessable Entity (erro de validação)
 500	        Internal Server Error
 
+Documentação da API
+    
+    Autenticação
 
+    Método	Endpoint	        Descrição
+    POST	/api/register	    Cadastro de usuário comum
+    POST	/api/login	        Login e retorno de token
+    POST	/api/logout     	Logout (requer token)
+    GET	    /api/me	            Dados do usuário logado
+
+
+    Posts
+
+    Método	Endpoint	        Descrição
+    GET 	/api/posts	        Listar todos os posts
+    GET 	/api/posts/{id}	    Detalhes de um post
+    POST    /api/posts	        Criar post (apenas ONG)
+    PUT	    /api/posts/{id}	    Atualizar post (apenas ONG autora)
+    DELETE	/api/posts/{id}	    Deletar post (apenas ONG autora)
+    GET	    /api/my-posts	    Posts do usuário logado
+
+    Comentários
+
+    Método	Endpoint	                Descrição
+    GET	    /api/posts/{id}/comments	Listar comentários de um post
+    POST	/api/comments/{id}      	Adicionar comentário a um post
+    PUT	    /api/comments/{id}	        Atualizar comentário (apenas autor)
+    DELETE	/api/comments/{id}	        Deletar comentário (apenas autor)
+
+    Curtidas
+
+    Método	Endpoint	            Descrição
+    POST	/api/posts/{id}/like	Curtir/descurtir um post
+
+    ONGs
+
+    Métode	Endpoint	                Descrição
+    GET	    /api/ongs	                Listar todas as ONGs
+    GET	    /api/ongs/{id}	            Detalhes de uma ONG
+    POST	/api/ongs/{id}/support	    Apoiar uma ONG
+    DELETE	/api/ongs/{id}/unsupport	Deixar de apoiar uma ONG
+
+
+📊 Estrutura do Projeto
+
+    app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Api/
+│   │   │   ├── AuthController.php
+│   │   │   ├── PostController.php
+│   │   │   ├── CommentController.php
+│   │   │   ├── LikeController.php
+│   │   │   └── OngController.php
+│   │   └── Web/
+│   │       └── PostController.php
+│   └── Middleware/
+├── Models/
+│   ├── User.php
+│   ├── RegularUser.php
+│   ├── Ong.php
+│   ├── Post.php
+│   ├── Comment.php
+│   └── Like.php
+└── ...
 
 
 

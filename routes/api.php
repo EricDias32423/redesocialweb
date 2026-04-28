@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\StatsController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UploadController;
+use App\Http\Controllers\Api\CachedController;
 
 Route::get('/health', function() {
     return response()->json(['status' => 'ok']);
@@ -129,3 +130,16 @@ if (app()->environment('local')) {
         return response()->json(['message' => 'API is working!']);
     });
 }
+
+
+
+// Rotas com cache
+Route::get('/feed', [CachedController::class, 'feed']);
+Route::get('/posts/{id}', [CachedController::class, 'post']);
+Route::get('/ongs', [CachedController::class, 'ongs']);
+Route::get('/ongs/{id}', [CachedController::class, 'ong']);
+Route::get('/dashboard/stats', [CachedController::class, 'dashboardStats'])->middleware('auth:sanctum');
+
+// Rotas para invalidar cache
+Route::post('/feed/invalidate', [CachedController::class, 'invalidateFeed']);
+Route::post('/posts/invalidate', [CachedController::class, 'invalidateOnNewPost'])->middleware('auth:ong');

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Jobs\SendWelcomeEmailJob;
+
 
 class AuthController extends Controller
 {
@@ -23,7 +25,7 @@ class AuthController extends Controller
             'cpf' => 'nullable|string|max:14|unique:regular_users',
             'birth_date' => 'nullable|date',
             'phone' => 'nullable|string|max:20',
-            'avatar' => 'nullable|string|max:255',
+            'avatar' => 'nullable|string|max:255',  
         ]);
 
         $user = RegularUser::create([
@@ -35,6 +37,8 @@ class AuthController extends Controller
             'phone' => $validated['phone'] ?? null,
             'avatar' => $validated['avatar'] ?? null,
         ]);
+
+        SendWelcomeEmailJob::dispatch($user, 'regular');
 
         // Gera token para o usuário (se estiver usando Sanctum)
         $token = $user->createToken('auth_token')->plainTextToken;

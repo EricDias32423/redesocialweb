@@ -9,6 +9,7 @@ use App\Models\RegularUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Services\CacheService;
 
 class PostController extends Controller
 {
@@ -16,38 +17,45 @@ class PostController extends Controller
      * Display a listing of posts (Feed público)
      */
     public function index(Request $request)
-    {
-        try {
-            $query = Post::with('ong')->latest();
-            
-            // Filtro por categoria
-            if ($request->has('category') && $request->category != '') {
-                $query->where('category', $request->category);
-            }
-            
-            // Busca por título ou conteúdo
-            if ($request->has('search') && $request->search != '') {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                      ->orWhere('content', 'like', "%{$search}%");
-                });
-            }
-            
-            $posts = $query->paginate(10);
-            
-            return response()->json([
-                'success' => true,
-                'data' => $posts
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao carregar posts: ' . $e->getMessage()
-            ], 500);
+{
+    try {
+        $query = Post::with('ong')->latest();
+        
+        // Filtro por categoria
+        if ($request->has('category') && $request->category != '') {
+            $query->where('category', $request->category);
         }
+        
+        // Busca por título ou conteúdo
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+        
+        $posts = $query->paginate(10);
+        
+        // ✅ Buscar categorias do CACHE (não do banco de dados)
+        $categories = \App\Services\CacheService::getCategories();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $posts,
+            'filters' => [
+                'categories' => $categories,
+                'selected_category' => $request->category,
+                'search' => $request->search
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao carregar posts: ' . $e->getMessage()
+        ], 500);
     }
-
+}
     /**
      * Display the specified post (público)
      */

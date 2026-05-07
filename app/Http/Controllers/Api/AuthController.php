@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Jobs\SendWelcomeEmailJob;
+use App\Models\Ong;
 
 
 class AuthController extends Controller
@@ -54,6 +55,51 @@ class AuthController extends Controller
             'token' => $token
         ], 201);
     }
+    /**
+ * Registrar uma nova ONG
+ */
+public function registerOng(Request $request)
+{
+    $validated = $request->validate([
+        'responsible_name' => 'required|string|max:255',
+        'ong_name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:ongs',
+        'password' => 'required|string|min:8|confirmed',
+        'cnpj' => 'nullable|string|max:18|unique:ongs',
+        'description' => 'nullable|string',
+        'phone' => 'nullable|string|max:20',
+        'address' => 'nullable|string|max:255',
+        'website' => 'nullable|url|max:255',
+        'logo' => 'nullable|image|max:2048',
+    ]);
+
+    if ($request->hasFile('logo')) {
+        $path = $request->file('logo')->store('logos', 'public');
+        $validated['logo'] = $path;
+    }
+
+    $validated['password'] = Hash::make($validated['password']);
+
+    $ong = Ong::create($validated);
+
+    // Disparar e-mail de boas-vindas
+    SendWelcomeEmailJob::dispatch($ong, 'ong');
+
+    // Gera token para a ONG
+    $token = $ong->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'message' => 'ONG cadastrada com sucesso!',
+        'user' => [
+            'id' => $ong->id,
+            'name' => $ong->ong_name,
+            'email' => $ong->email,
+            'type' => 'ong'
+        ],
+        'token' => $token
+    ], 201);
+}
 
     /**
      * Login de usuário comum
@@ -90,6 +136,37 @@ class AuthController extends Controller
             'token' => $token
         ]);
     }
+    // Em AuthController
+public function loginOng(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $ong = Ong::where('email', $request->email)->first();
+
+    if (!$ong || !Hash::check($request->password, $ong->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['Credenciais inválidas.'],
+        ]);
+    }
+
+    $ong->tokens()->delete();
+    $token = $ong->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Login da ONG realizado com sucesso!',
+        'user' => [
+            'id' => $ong->id,
+            'name' => $ong->ong_name,
+            'email' => $ong->email,
+            'type' => 'ong'
+        ],
+        'token' => $token
+    ]);
+}
 
     /**
      * Logout do usuário

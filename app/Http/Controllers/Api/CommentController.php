@@ -5,56 +5,33 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Post;
-use App\Models\Ong;
-use App\Models\RegularUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
     /**
-     * List comments of a post (público)
+     * List comments of a post (público) - VERSÃO SIMPLIFICADA
      */
     public function index(Post $post)
     {
         try {
+            // Versão mais simples possível para teste
             $comments = $post->comments()
-                ->with('commentable')
                 ->latest()
-                ->get()
-                ->map(function ($comment) {
-                    $authorName = 'Usuário';
-                    $authorAvatar = null;
-                    
-                    if ($comment->commentable_type === RegularUser::class) {
-                        $author = RegularUser::find($comment->commentable_id);
-                        $authorName = $author ? $author->name : 'Usuário removido';
-                        $authorAvatar = $author ? $author->avatar : null;
-                    } elseif ($comment->commentable_type === Ong::class) {
-                        $author = Ong::find($comment->commentable_id);
-                        $authorName = $author ? $author->ong_name : 'ONG removida';
-                        $authorAvatar = $author ? $author->logo : null;
-                    }
-                    
-                    return [
-                        'id' => $comment->id,
-                        'content' => $comment->content,
-                        'author_name' => $authorName,
-                        'author_avatar' => $authorAvatar,
-                        'author_type' => $comment->commentable_type === RegularUser::class ? 'user' : 'ong',
-                        'created_at' => $comment->created_at->diffForHumans(),
-                        'created_at_raw' => $comment->created_at
-                    ];
-                });
+                ->get();
             
             return response()->json([
                 'success' => true,
                 'data' => $comments
             ]);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao carregar comentários: ' . $e->getMessage()
+                'message' => 'Erro: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ], 500);
         }
     }
@@ -116,7 +93,7 @@ class CommentController extends Controller
                     'id' => $comment->id,
                     'content' => $comment->content,
                     'author_name' => $user->name ?? $user->ong_name,
-                    'author_type' => $userType === RegularUser::class ? 'user' : 'ong',
+                    'author_type' => $userType === 'App\Models\RegularUser' ? 'user' : 'ong',
                     'created_at' => $comment->created_at->diffForHumans()
                 ]
             ], 201);
@@ -148,7 +125,6 @@ class CommentController extends Controller
                 ], 401);
             }
             
-            // Verificar se o usuário é o autor do comentário
             if ($comment->commentable_id !== $user->id || $comment->commentable_type !== get_class($user)) {
                 return response()->json([
                     'success' => false,
@@ -197,7 +173,6 @@ class CommentController extends Controller
                 ], 401);
             }
             
-            // Verificar se o usuário é o autor do comentário
             if ($comment->commentable_id !== $user->id || $comment->commentable_type !== get_class($user)) {
                 return response()->json([
                     'success' => false,

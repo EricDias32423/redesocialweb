@@ -83,8 +83,10 @@ class PostController extends Controller
     public function store(Request $request)
     {
         try {
+                $user = $request->user();
+
             // Verificar se é uma ONG
-            if (!Auth::guard('ong')->check()) {
+            if (!$user instanceof \App\Models\Ong) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Apenas ONGs podem criar posts'
@@ -103,7 +105,7 @@ class PostController extends Controller
                 $validated['image'] = $path;
             }
 
-            $validated['ong_id'] = Auth::guard('ong')->id();
+            $validated['ong_id'] = $user->id;
 
             $post = Post::create($validated);
             $post->load('ong');
@@ -132,13 +134,29 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         try {
+
+        $user = $request->user();
+
+         if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuário não autenticado'
+            ], 401);
+        }
+
+        if (!$user instanceof \App\Models\Ong) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Apenas ONGs podem editar posts'
+            ], 403);
+        }
             // Verificar se é a ONG dona do post
-            if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Você não tem permissão para editar este post'
-                ], 403);
-            }
+            if ($user->id !== $post->ong_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Você não tem permissão para editar este post'
+            ], 403);
+        }
 
             $validated = $request->validate([
                 'title' => 'sometimes|required|string|max:255',
@@ -179,36 +197,57 @@ class PostController extends Controller
     /**
      * Remove the specified post (apenas ONG dona)
      */
-    public function destroy(Post $post)
-    {
-        try {
-            if (!Auth::guard('ong')->check() || Auth::guard('ong')->id() !== $post->ong_id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Você não tem permissão para deletar este post'
-                ], 403);
-            }
-
-            if ($post->image) {
-                Storage::disk('public')->delete($post->image);
-            }
-
-            // Deletar curtidas e comentários associados
-            $post->likes()->delete();
-            $post->comments()->delete();
-            $post->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Post deletado com sucesso!'
-            ]);
-        } catch (\Exception $e) {
+   public function destroy(Request $request, Post $post)
+{
+    try {
+        // ✅ Obtém o usuário autenticado
+        $user = $request->user();
+        
+        // ✅ Verifica se o usuário existe
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao deletar post: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Usuário não autenticado'
+            ], 401);
         }
+        
+        // ✅ Verifica se é uma ONG
+        if (!$user instanceof \App\Models\Ong) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Apenas ONGs podem deletar posts'
+            ], 403);
+        }
+        
+        // ✅ Verifica se a ONG é a dona do post
+        if ($user->id !== $post->ong_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Você não tem permissão para deletar este post'
+            ], 403);
+        }
+
+        // ✅ Deleta a imagem se existir
+        if ($post->image) {
+            Storage::disk('public')->delete($post->image);
+        }
+
+        // ✅ Deletar curtidas e comentários associados
+        $post->likes()->delete();
+        $post->comments()->delete();
+        $post->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post deletado com sucesso!'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erro ao deletar post: ' . $e->getMessage()
+        ], 500);
     }
+}
 
     /**
      * Get user's posts (requer token)

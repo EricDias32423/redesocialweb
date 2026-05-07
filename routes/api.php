@@ -23,6 +23,10 @@ Route::get('/health', function() {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Registro de ONG
+Route::post('/ong/register', [AuthController::class, 'registerOng']);
+Route::post('/ong/login', [AuthController::class, 'loginOng']);
+
 // Posts públicos
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);

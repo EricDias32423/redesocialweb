@@ -39,6 +39,7 @@ return [
         'ong' => [
             'driver' => 'session',
             'provider' => 'ongs', // Este provider precisa existir
+            'model' => App\Models\Ong::class,
         ],
     ],
 

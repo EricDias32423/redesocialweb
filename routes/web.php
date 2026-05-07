@@ -10,12 +10,13 @@ use App\Http\Controllers\Dashboard\RegularUserDashboardController;
 use App\Http\Controllers\Dashboard\OngDashboardController;
 use App\Http\Controllers\Regular\OngController as RegularOngController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\API\CommentController as ApiCommentController;
 
 // ===========================================
 // ROTAS DE COMENTÁRIOS (qualquer usuário logado)
 // ===========================================
 Route::middleware('auth:regular,ong')->group(function () {
-    Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
+    
     Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
     Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -66,7 +67,6 @@ Route::prefix('regular')->name('regular.')->group(function () {
         Route::get('/ongs/{ong}', [RegularOngController::class, 'show'])->name('ongs.show');
         Route::post('/ongs/{ong}/support', [RegularOngController::class, 'support'])->name('ongs.support');
         Route::delete('/ongs/{ong}/unsupport', [RegularOngController::class, 'unsupport'])->name('ongs.unsupport');
-        Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
         Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
         Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -97,7 +97,6 @@ Route::prefix('ong')->name('ong.')->group(function () {
         Route::delete('/profile', [OngProfileController::class, 'destroy'])->name('profile.destroy'); 
         Route::post('/profile/logo', [OngProfileController::class, 'uploadLogo'])->name('profile.logo');
         Route::delete('/profile/logo', [OngProfileController::class, 'removeLogo'])->name('profile.logo.remove');
-    Route::get('/posts/{post}/comments', [CommentController::class, 'index'])->name('comments.index');
     Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
     Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -121,4 +120,4 @@ Route::middleware('auth:ong')->group(function () {
 // ===========================================
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
-
+Route::get('/posts/{post}/comments', [App\Http\Controllers\Api\CommentController::class, 'index'])->name('comments.index');

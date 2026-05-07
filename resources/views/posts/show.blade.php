@@ -204,11 +204,8 @@
 
 @push('scripts')
 <script>
-// Curtir post
-
 function likePost(postId) {
     const button = event.currentTarget;
-    
     fetch(`/posts/${postId}/like`, {
         method: 'POST',
         headers: {
@@ -217,26 +214,12 @@ function likePost(postId) {
             'Accept': 'application/json'
         }
     })
-    .then(response => {
-        if (!response.ok) {
-            // Tenta extrair a mensagem de erro do corpo da resposta
-            return response.json().then(errData => {
-                throw new Error(errData.message || 'Erro na requisição');
-            }).catch(() => {
-                // Se não conseguir parsear o JSON, usa o status
-                throw new Error(`Erro ${response.status}: ${response.statusText}`);
-            });
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Atualiza o contador
             const currentText = button.innerHTML;
             const newText = currentText.replace(/\d+/, data.count);
             button.innerHTML = newText;
-            
-            // Atualiza a cor
             if (data.liked) {
                 button.classList.remove('btn-outline-danger');
                 button.classList.add('btn-danger');
@@ -246,13 +229,9 @@ function likePost(postId) {
             }
         }
     })
-    .catch(error => {
-        console.error('Erro detalhado:', error);
-        alert('Erro ao curtir: ' + error.message);
-    });
+    .catch(error => console.error('Erro ao curtir:', error));
 }
 
-// Compartilhar post
 function sharePost() {
     if (navigator.share) {
         navigator.share({
@@ -266,7 +245,80 @@ function sharePost() {
     }
 }
 
-// Enviar comentário
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe.replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+}
+
+function loadComments(postId) {
+    console.log('🔍 Carregando comentários para o post:', postId);
+    
+    fetch(`/posts/${postId}/comments`)
+        .then(response => {
+            console.log('📡 Status da resposta:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.text();
+        })
+        .then(text => {
+            console.log('📄 Resposta bruta (primeiros 200 caracteres):', text.substring(0, 200));
+            
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error('❌ Erro ao fazer parse do JSON:', e.message);
+                document.getElementById('comments-list').innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Erro ao carregar comentários:</strong> Resposta não é um JSON válido.<br>
+                        <small>Verifique o console para mais detalhes.</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            const container = document.getElementById('comments-list');
+            if (!container) {
+                console.error('❌ Elemento comments-list não encontrado');
+                return;
+            }
+            
+            if (data.success && data.data && data.data.length > 0) {
+                let html = '';
+                data.data.forEach(comment => {
+                    html += `
+                        <div class="comment-item p-3 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <strong>${escapeHtml(comment.author_name)}</strong>
+                                <small class="text-muted">${escapeHtml(comment.created_at)}</small>
+                            </div>
+                            <p class="mb-0 mt-2">${escapeHtml(comment.content)}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                console.log(`✅ Carregados ${data.data.length} comentários`);
+            } else {
+                container.innerHTML = '<p class="text-muted text-center py-4">Nenhum comentário ainda.</p>';
+                console.log('📭 Nenhum comentário encontrado');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Erro ao carregar comentários:', error);
+            document.getElementById('comments-list').innerHTML = `
+                <div class="alert alert-warning">
+                    <strong>Erro ao carregar comentários:</strong> ${error.message}<br>
+                    <small>Verifique se o servidor está respondendo corretamente.</small>
+                </div>
+            `;
+        });
+}
+
 function submitComment(event, postId) {
     event.preventDefault();
     const form = event.target;
@@ -282,35 +334,39 @@ function submitComment(event, postId) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
     
-    // URL CORRETA: /comments/1 (rota comments.store)
+    console.log('📤 Enviando comentário para o post:', postId);
+    
     fetch(`/comments/${postId}`, {
-    method: 'POST',
-    headers: {
-        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'  // 👈 IMPORTANTE
-    },
-    body: JSON.stringify({ content: comment })
-})
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ content: comment })
+    })
     .then(response => {
+        console.log('📡 Status da resposta ao comentar:', response.status);
         if (!response.ok) {
-            throw new Error('Erro na requisição');
+            return response.text().then(text => {
+                console.error('❌ Resposta de erro:', text);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            });
         }
         return response.json();
     })
     .then(data => {
+        console.log('✅ Resposta ao comentar:', data);
         if (data.success) {
             textarea.value = '';
-            // Recarrega a página para mostrar o novo comentário
-            // (simples por enquanto, depois podemos fazer AJAX)
-            location.reload();
+            loadComments(postId);
         } else {
-            alert(data.message || 'Erro ao comentar.');
+            alert(data.message || data.error || 'Erro ao comentar.');
         }
     })
     .catch(error => {
-        console.error('Erro:', error);
-        alert('Erro ao enviar comentário.');
+        console.error('❌ Erro ao enviar comentário:', error);
+        alert('Erro ao enviar comentário: ' + error.message);
     })
     .finally(() => {
         submitBtn.disabled = false;
@@ -318,36 +374,10 @@ function submitComment(event, postId) {
     });
 }
 
-function loadComments(postId) {
-    fetch(`/posts/${postId}/comments`)
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('comments-list');
-            
-            if (data.success && data.comments.length > 0) {
-                let html = '';
-                data.comments.forEach(comment => {
-                    html += `
-                        <div class="comment-item p-3 border-bottom">
-                            <div class="d-flex justify-content-between">
-                                <strong>${comment.author_name}</strong>
-                                <small class="text-muted">${comment.created_at}</small>
-                            </div>
-                            <p class="mb-0 mt-2">${comment.content}</p>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } else {
-                container.innerHTML = '<p class="text-muted text-center py-4">Nenhum comentário ainda.</p>';
-            }
-        });
-}
-
-// Chamar ao enviar comentário (dentro do .then)
-if (data.success) {
-    textarea.value = '';
-    loadComments(postId); // em vez de location.reload()
-}
+// Carregar comentários quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Página carregada, post ID: {{ $post->id }}');
+    loadComments({{ $post->id }});
+});
 </script>
 @endpush

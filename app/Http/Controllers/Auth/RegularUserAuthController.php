@@ -7,6 +7,7 @@ use App\Models\RegularUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\SendWelcomeEmailJob;
 
 class RegularUserAuthController extends Controller
 {
@@ -37,6 +38,7 @@ class RegularUserAuthController extends Controller
 
         Auth::guard('regular')->login($user);
 
+        SendWelcomeEmailJob::dispatch($user, 'regular');
         // Redirecionar para o dashboard (NÃO para o profile)
         return redirect()->route('regular.dashboard')
             ->with('success', 'Cadastro realizado com sucesso! Bem-vindo!');

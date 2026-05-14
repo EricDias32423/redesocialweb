@@ -62,6 +62,14 @@
                     
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <?php if(auth()->guard('regular')->check()): ?>
+                            <form action="<?php echo e(route('regular.chat.start')); ?>" method="POST" class="d-inline">
+                                <?php echo csrf_field(); ?>
+                                <input type="hidden" name="ong_id" value="<?php echo e($ong->id); ?>">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-comments me-2"></i>Enviar mensagem
+                                </button>
+                            </form>
+
                             <?php if($userSupported): ?>
                                 <form action="<?php echo e(route('regular.ongs.unsupport', $ong)); ?>" method="POST" class="d-inline">
                                     <?php echo csrf_field(); ?>
@@ -366,4 +374,5 @@ document.getElementById('postFilter').addEventListener('change', function() {
 </script>
 <?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/regular/ongs/show.blade.php ENDPATH**/ ?>

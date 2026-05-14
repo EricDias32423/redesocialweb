@@ -120,10 +120,10 @@
                         <div class="row g-2">
                             {{-- BOTÃO DE CURTIR (movido para cá) --}}
                             <div class="col-md-4">
-                                <button class="btn btn-outline-danger w-100" 
+                                <button class="btn {{ $userLiked ? 'btn-danger' : 'btn-outline-danger' }} w-100" 
                                         onclick="likePost({{ $post->id }})">
                                     <i class="fas fa-heart me-2"></i>
-                                    Curtir ({{ $post->likes_count ?? 0 }})
+                                    Curtir (<span class="likes-count">{{ $post->likes_count ?? 0 }}</span>)
                                 </button>
                             </div>
                             
@@ -206,6 +206,7 @@
 <script>
 function likePost(postId) {
     const button = event.currentTarget;
+    const count = button.querySelector('.likes-count');
     fetch(`/posts/${postId}/like`, {
         method: 'POST',
         headers: {
@@ -217,9 +218,7 @@ function likePost(postId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const currentText = button.innerHTML;
-            const newText = currentText.replace(/\d+/, data.count);
-            button.innerHTML = newText;
+            count.textContent = data.count;
             if (data.liked) {
                 button.classList.remove('btn-outline-danger');
                 button.classList.add('btn-danger');

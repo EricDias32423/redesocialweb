@@ -53,6 +53,11 @@
                             <i class="fas fa-hand-holding-heart me-1"></i>ONGs
                         </a>
                     </li>
+                    <li class="nav-item me-2">
+                        <a class="nav-link" href="<?php echo e(route('regular.chat.index')); ?>">
+                            <i class="fas fa-comments me-1"></i>Mensagens
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
@@ -112,6 +117,11 @@
                     <li class="nav-item me-2">
                         <a class="nav-link <?php echo e(request()->routeIs('my-posts') ? 'active' : ''); ?>" href="<?php echo e(route('my-posts')); ?>">
                             <i class="fas fa-newspaper me-1"></i>Meus Posts
+                        </a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="nav-link <?php echo e(request()->routeIs('ong.chat.*') ? 'active' : ''); ?>" href="<?php echo e(route('ong.chat.index')); ?>">
+                            <i class="fas fa-comments me-1"></i>Mensagens
                         </a>
                     </li>
 
@@ -237,4 +247,5 @@
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
-</html><?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/layouts/app.blade.php ENDPATH**/ ?>

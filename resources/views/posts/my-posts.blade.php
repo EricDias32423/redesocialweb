@@ -28,6 +28,7 @@
                                     <th>Título</th>
                                     <th>Categoria</th>
                                     <th>Data</th>
+                                    <th>Curtidas</th>
                                     <th>Comentários</th>
                                     <th class="text-end">Ações</th>
                                 </tr>
@@ -53,6 +54,11 @@
                                             <span class="small text-muted">
                                                 <i class="far fa-calendar me-1"></i>
                                                 {{ $post->created_at->format('d/m/Y H:i') }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-light text-dark">
+                                                {{ $post->likes_count ?? 0 }}
                                             </span>
                                         </td>
                                         <td>

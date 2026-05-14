@@ -19,7 +19,7 @@ class RegularUserDashboardController extends Controller
         $stats = [
             'total_ongs_supported' => 0, // Implementar lógica de ONGs apoiadas
             'total_comments' => 0, // Implementar contagem de comentários
-            'total_likes_given' => 0, // Implementar contagem de curtidas
+            'total_likes_given' => $user->likes()->count(),
             'member_since' => $user->created_at->format('d/m/Y'),
         ];
         

@@ -113,8 +113,13 @@
                                     <i class="fas fa-eye me-1"></i>Ler mais
                                 </a>
                                 
-                                <div class="small text-muted">
-                                    <i class="far fa-comment me-1"></i> {{ $post->comments_count ?? 0 }}
+                                <div class="small text-muted d-flex gap-3">
+                                    <span>
+                                        <i class="far fa-heart me-1"></i>{{ $post->likes_count ?? 0 }}
+                                    </span>
+                                    <span>
+                                        <i class="far fa-comment me-1"></i>{{ $post->comments_count ?? 0 }}
+                                    </span>
                                 </div>
                             </div>
                         </div>

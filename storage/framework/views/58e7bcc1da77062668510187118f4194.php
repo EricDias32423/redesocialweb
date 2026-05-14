@@ -1,46 +1,46 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Meu Perfil - Usuário'); ?>
 
-@section('title', 'Meu Perfil - Usuário')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row justify-content-center">
     <div class="col-md-10">
         <div class="card shadow-lg border-0">
             <div class="card-header bg-success text-white">
-                <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Meu Perfil - {{ $user->name }}</h4>
+                <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Meu Perfil - <?php echo e($user->name); ?></h4>
             </div>
 
             <div class="card-body">
-                @if(session('success'))
+                <?php if(session('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                        <i class="fas fa-check-circle me-2"></i><?php echo e(session('success')); ?>
+
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if(session('error'))
+                <?php if(session('error')): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                        <i class="fas fa-exclamation-circle me-2"></i><?php echo e(session('error')); ?>
+
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                {{-- Avatar atual --}}
+                
                 <div class="text-center mb-4">
-                    @if($user->avatar)
-                        <img src="{{ asset('storage/' . $user->avatar) }}" 
+                    <?php if($user->avatar): ?>
+                        <img src="<?php echo e(asset('storage/' . $user->avatar)); ?>" 
                              alt="Avatar do usuário" 
                              class="rounded-circle img-thumbnail"
                              style="width: 150px; height: 150px; object-fit: cover;">
-                    @else
+                    <?php else: ?>
                         <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center"
                              style="width: 150px; height: 150px;">
                             <i class="fas fa-user text-white fa-4x"></i>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
-                {{-- Abas de navegação --}}
+                
                 <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" 
@@ -62,12 +62,12 @@
                     </li>
                 </ul>
 
-                <form method="POST" action="{{ route('regular.profile.update') }}" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
+                <form method="POST" action="<?php echo e(route('regular.profile.update')); ?>" enctype="multipart/form-data">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?>
 
                     <div class="tab-content" id="profileTabsContent">
-                        {{-- Aba de Informações Pessoais --}}
+                        
                         <div class="tab-pane fade show active" id="info" role="tabpanel">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -75,14 +75,28 @@
                                         <i class="fas fa-user text-success me-2"></i>Nome Completo
                                     </label>
                                     <input type="text" 
-                                           class="form-control @error('name') is-invalid @enderror" 
+                                           class="form-control <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                            id="name" 
                                            name="name" 
-                                           value="{{ old('name', $user->name) }}"
+                                           value="<?php echo e(old('name', $user->name)); ?>"
                                            required>
-                                    @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -90,14 +104,28 @@
                                         <i class="fas fa-envelope text-success me-2"></i>E-mail
                                     </label>
                                     <input type="email" 
-                                           class="form-control @error('email') is-invalid @enderror" 
+                                           class="form-control <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                            id="email" 
                                            name="email" 
-                                           value="{{ old('email', $user->email) }}"
+                                           value="<?php echo e(old('email', $user->email)); ?>"
                                            required>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -105,14 +133,28 @@
                                         <i class="fas fa-id-card text-success me-2"></i>CPF
                                     </label>
                                     <input type="text" 
-                                           class="form-control @error('cpf') is-invalid @enderror" 
+                                           class="form-control <?php $__errorArgs = ['cpf'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                            id="cpf" 
                                            name="cpf" 
-                                           value="{{ old('cpf', $user->cpf) }}"
+                                           value="<?php echo e(old('cpf', $user->cpf)); ?>"
                                            placeholder="000.000.000-00">
-                                    @error('cpf')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <?php $__errorArgs = ['cpf'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -120,13 +162,27 @@
                                         <i class="fas fa-calendar-alt text-success me-2"></i>Data de Nascimento
                                     </label>
                                     <input type="date" 
-                                           class="form-control @error('birth_date') is-invalid @enderror" 
+                                           class="form-control <?php $__errorArgs = ['birth_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                            id="birth_date" 
                                            name="birth_date" 
-                                           value="{{ old('birth_date', $user->birth_date ? $user->birth_date->format('Y-m-d') : '') }}">
-                                    @error('birth_date')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                           value="<?php echo e(old('birth_date', $user->birth_date ? $user->birth_date->format('Y-m-d') : '')); ?>">
+                                    <?php $__errorArgs = ['birth_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -134,14 +190,28 @@
                                         <i class="fas fa-phone text-success me-2"></i>Telefone
                                     </label>
                                     <input type="text" 
-                                           class="form-control @error('phone') is-invalid @enderror" 
+                                           class="form-control <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                            id="phone" 
                                            name="phone" 
-                                           value="{{ old('phone', $user->phone) }}"
+                                           value="<?php echo e(old('phone', $user->phone)); ?>"
                                            placeholder="(00) 00000-0000">
-                                    @error('phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
@@ -149,16 +219,30 @@
                                         <i class="fas fa-camera text-success me-2"></i>Foto de Perfil
                                     </label>
                                     <input type="file" 
-                                           class="form-control @error('avatar') is-invalid @enderror" 
+                                           class="form-control <?php $__errorArgs = ['avatar'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                            id="avatar" 
                                            name="avatar" 
                                            accept="image/*">
                                     <small class="text-muted">Deixe em branco para manter a foto atual. Tamanho máx: 2MB</small>
-                                    @error('avatar')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <?php $__errorArgs = ['avatar'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     
-                                    {{-- Preview da nova foto --}}
+                                    
                                     <div id="avatar-preview" class="mt-2 text-center" style="display: none;">
                                         <img src="#" alt="Preview" class="img-fluid rounded-circle" style="max-height: 100px; max-width: 100px;">
                                     </div>
@@ -166,9 +250,9 @@
                             </div>
                         </div>
 
-                       {{-- Aba de Segurança --}}
+                       
 <div class="tab-pane fade" id="security" role="tabpanel">
-    {{-- Seção de alteração de senha --}}
+    
     <div class="alert alert-info">
         <i class="fas fa-info-circle me-2"></i>
         <strong>Dica:</strong> Preencha apenas se desejar alterar sua senha. Deixe em branco para manter a senha atual.
@@ -180,13 +264,27 @@
                 <i class="fas fa-lock text-success me-2"></i>Senha Atual
             </label>
             <input type="password" 
-                   class="form-control @error('current_password') is-invalid @enderror" 
+                   class="form-control <?php $__errorArgs = ['current_password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                    id="current_password" 
                    name="current_password">
             <small class="text-muted">Obrigatório apenas se for alterar a senha</small>
-            @error('current_password')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <?php $__errorArgs = ['current_password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="col-md-6 mb-3">
@@ -194,13 +292,27 @@
                 <i class="fas fa-key text-success me-2"></i>Nova Senha
             </label>
             <input type="password" 
-                   class="form-control @error('new_password') is-invalid @enderror" 
+                   class="form-control <?php $__errorArgs = ['new_password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                    id="new_password" 
                    name="new_password">
             <small class="text-muted">Mínimo 8 caracteres</small>
-            @error('new_password')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
+            <?php $__errorArgs = ['new_password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div class="invalid-feedback"><?php echo e($message); ?></div>
+            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
         </div>
 
         <div class="col-md-6 mb-3">
@@ -214,7 +326,7 @@
         </div>
     </div>
 
-    {{-- Força da senha --}}
+    
     <div class="mt-3" id="password-strength" style="display: none;">
         <label class="form-label">Força da senha:</label>
         <div class="progress" style="height: 5px;">
@@ -223,28 +335,28 @@
         <small class="text-muted" id="strength-text"></small>
     </div>
 </div>
-                        {{-- Aba de Preferências --}}
+                        
                         <div class="tab-pane fade" id="preferences" role="tabpanel">
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <h5 class="text-success"><i class="fas fa-bell me-2"></i>Notificações</h5>
                                     <div class="form-check form-switch mb-2">
                                         <input class="form-check-input" type="checkbox" id="email_notifications" 
-                                               name="email_notifications" {{ $user->settings['email_notifications'] ?? true ? 'checked' : '' }}>
+                                               name="email_notifications" <?php echo e($user->settings['email_notifications'] ?? true ? 'checked' : ''); ?>>
                                         <label class="form-check-label" for="email_notifications">
                                             Receber notificações por e-mail
                                         </label>
                                     </div>
                                     <div class="form-check form-switch mb-2">
                                         <input class="form-check-input" type="checkbox" id="post_notifications" 
-                                               name="post_notifications" {{ $user->settings['post_notifications'] ?? true ? 'checked' : '' }}>
+                                               name="post_notifications" <?php echo e($user->settings['post_notifications'] ?? true ? 'checked' : ''); ?>>
                                         <label class="form-check-label" for="post_notifications">
                                             Notificar quando ONGs que sigo postarem
                                         </label>
                                     </div>
                                     <div class="form-check form-switch mb-2">
                                         <input class="form-check-input" type="checkbox" id="comment_notifications" 
-                                               name="comment_notifications" {{ $user->settings['comment_notifications'] ?? true ? 'checked' : '' }}>
+                                               name="comment_notifications" <?php echo e($user->settings['comment_notifications'] ?? true ? 'checked' : ''); ?>>
                                         <label class="form-check-label" for="comment_notifications">
                                             Notificar quando alguém comentar em posts que comentei
                                         </label>
@@ -255,21 +367,21 @@
                                     <h5 class="text-success mt-3"><i class="fas fa-globe me-2"></i>Privacidade</h5>
                                     <div class="form-check form-switch mb-2">
                                         <input class="form-check-input" type="checkbox" id="show_email" 
-                                               name="show_email" {{ $user->settings['show_email'] ?? false ? 'checked' : '' }}>
+                                               name="show_email" <?php echo e($user->settings['show_email'] ?? false ? 'checked' : ''); ?>>
                                         <label class="form-check-label" for="show_email">
                                             Mostrar meu e-mail no perfil público
                                         </label>
                                     </div>
                                     <div class="form-check form-switch mb-2">
                                         <input class="form-check-input" type="checkbox" id="show_phone" 
-                                               name="show_phone" {{ $user->settings['show_phone'] ?? false ? 'checked' : '' }}>
+                                               name="show_phone" <?php echo e($user->settings['show_phone'] ?? false ? 'checked' : ''); ?>>
                                         <label class="form-check-label" for="show_phone">
                                             Mostrar meu telefone no perfil público
                                         </label>
                                     </div>
                                     <div class="form-check form-switch mb-2">
                                         <input class="form-check-input" type="checkbox" id="show_birth_date" 
-                                               name="show_birth_date" {{ $user->settings['show_birth_date'] ?? false ? 'checked' : '' }}>
+                                               name="show_birth_date" <?php echo e($user->settings['show_birth_date'] ?? false ? 'checked' : ''); ?>>
                                         <label class="form-check-label" for="show_birth_date">
                                             Mostrar minha data de nascimento no perfil público
                                         </label>
@@ -290,43 +402,43 @@
                     </div>
                 </form>
 
-                {{-- =========================================== --}}
-                {{-- SEÇÃO DE VERIFICAÇÃO EM DUAS ETAPAS (2FA) --}}
-                {{-- =========================================== --}}
+                
+                
+                
                 <div class="mt-4 pt-3 border-top">
                     <h5 class="fw-semibold mb-3">
                         <i class="fas fa-shield-alt me-2" style="color: var(--primary-green);"></i>
                         Verificação em duas etapas (2FA)
                     </h5>
                     
-                    @if(isset($user) && $user->two_factor_enabled)
+                    <?php if(isset($user) && $user->two_factor_enabled): ?>
                         <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success">
                             <i class="fas fa-check-circle me-2"></i>
                             <strong>✅ 2FA está ATIVADO</strong><br>
                             <small>Sua conta está mais segura. Ao fazer login, você precisará de um código enviado por e-mail.</small>
                         </div>
                         
-                        <form method="POST" action="{{ route('regular.profile.disable-2fa') }}" class="d-inline">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('regular.profile.disable-2fa')); ?>" class="d-inline">
+                            <?php echo csrf_field(); ?>
                             <button type="submit" class="btn btn-outline-danger" 
                                     onclick="return confirm('⚠️ Desativar a verificação em duas etapas? Sua conta ficará menos segura.')">
                                 <i class="fas fa-toggle-off me-2"></i>Desativar 2FA
                             </button>
                         </form>
-                    @else
+                    <?php else: ?>
                         <div class="alert alert-info border-0 bg-info bg-opacity-10 text-info">
                             <i class="fas fa-info-circle me-2"></i>
                             <strong>🔒 2FA está DESATIVADO</strong><br>
                             <small>Ative a verificação em duas etapas para aumentar a segurança da sua conta. Você receberá um código por e-mail ao fazer login.</small>
                         </div>
                         
-                        <form method="POST" action="{{ route('regular.profile.enable-2fa') }}">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('regular.profile.enable-2fa')); ?>">
+                            <?php echo csrf_field(); ?>
                             <button type="submit" class="btn btn-outline-success">
                                 <i class="fas fa-toggle-on me-2"></i>Ativar 2FA
                             </button>
                         </form>
-                    @endif
+                    <?php endif; ?>
                     
                     <div class="mt-3 small text-muted">
                         <i class="fas fa-question-circle me-1"></i>
@@ -338,7 +450,7 @@
     </div>
 </div>
 
-{{-- Modal de exclusão --}}
+
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -356,22 +468,36 @@
                 
                 <p>Para confirmar a exclusão da sua conta, digite sua senha abaixo:</p>
                 
-                <form id="deleteForm" method="POST" action="{{ route('regular.profile.destroy') }}">
-                    @csrf
-                    @method('DELETE')
+                <form id="deleteForm" method="POST" action="<?php echo e(route('regular.profile.destroy')); ?>">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('DELETE'); ?>
                     
                     <div class="mb-3">
                         <label for="delete_password" class="form-label">
                             <i class="fas fa-lock me-2"></i>Sua senha:
                         </label>
                         <input type="password" 
-                               class="form-control @error('password') is-invalid @enderror" 
+                               class="form-control <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
                                id="delete_password" 
                                name="password" 
                                required>
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                 </form>
             </div>
@@ -387,7 +513,7 @@
     </div>
 </div>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     .nav-tabs .nav-link {
         color: #495057;
@@ -416,9 +542,9 @@
         padding: 3px;
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 // Preview do avatar
 document.getElementById('avatar').addEventListener('change', function(e) {
@@ -524,5 +650,6 @@ document.getElementById('phone').addEventListener('input', function(e) {
     }
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/profile/regular/edit.blade.php ENDPATH**/ ?>

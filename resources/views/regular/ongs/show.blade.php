@@ -63,6 +63,14 @@
                     {{-- Botões de ação --}}
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         @auth('regular')
+                            <form action="{{ route('regular.chat.start') }}" method="POST" class="d-inline">
+                                @csrf
+                                <input type="hidden" name="ong_id" value="{{ $ong->id }}">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-comments me-2"></i>Enviar mensagem
+                                </button>
+                            </form>
+
                             @if($userSupported)
                                 <form action="{{ route('regular.ongs.unsupport', $ong) }}" method="POST" class="d-inline">
                                     @csrf

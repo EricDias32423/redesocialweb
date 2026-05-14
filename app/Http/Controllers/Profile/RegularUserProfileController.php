@@ -8,9 +8,43 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use App\Services\TwoFactorService;
+use App\Jobs\SendTwoFactorCodeJob;
+use App\Models\RegularUser;
+use Illuminate\Support\Facades\Log;
 
 class RegularUserProfileController extends Controller
 {
+    public function enableTwoFactor(Request $request)
+    {
+        \Log::info('🔐 STEP 1: Iniciando enableTwoFactor');
+        
+        $user = $request->user();
+        \Log::info('🔐 STEP 2: Usuário ID: ' . $user->id . ', Email: ' . $user->email);
+        
+        // Usar o serviço para gerar e enviar o código
+        TwoFactorService::sendCode($user);
+        \Log::info('🔐 STEP 3: Código gerado e enviado');
+        
+        // Salvar na sessão
+        session(['2fa_enabling' => true]);
+        session(['2fa_user_id' => $user->id]);
+        \Log::info('🔐 STEP 4: Sessão configurada - 2fa_enabling: true, user_id: ' . $user->id);
+        
+        // Redirecionar
+        \Log::info('🔐 STEP 5: Redirecionando para 2fa.verify');
+        return redirect()->route('2fa.verify')
+            ->with('info', 'Código enviado para seu e-mail!');
+    }
+
+public function disableTwoFactor(Request $request)
+{
+    $user = $request->user();
+    TwoFactorService::disable($user);
+    
+    return redirect()->route('regular.profile.edit')
+        ->with('success', '2FA desativado.');
+}
     /**
      * Exibir formulário de edição do perfil
      */

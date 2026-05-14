@@ -11,6 +11,14 @@ use App\Http\Controllers\Dashboard\OngDashboardController;
 use App\Http\Controllers\Regular\OngController as RegularOngController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\API\CommentController as ApiCommentController;
+use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\ChatController;
+
+Route::middleware('guest')->group(function () {
+    Route::get('/verify-2fa', [TwoFactorController::class, 'showVerifyForm'])->name('2fa.verify');
+    Route::post('/verify-2fa', [TwoFactorController::class, 'verify'])->name('2fa.verify.submit');
+    Route::post('/resend-2fa', [TwoFactorController::class, 'resend'])->name('2fa.resend');
+});
 
 // ===========================================
 // ROTAS DE COMENTÁRIOS (qualquer usuário logado)
@@ -70,6 +78,15 @@ Route::prefix('regular')->name('regular.')->group(function () {
         Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
         Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+        Route::post('/profile/enable-2fa', [RegularUserProfileController::class, 'enableTwoFactor'])->name('profile.enable-2fa');
+        Route::post('/profile/disable-2fa', [RegularUserProfileController::class, 'disableTwoFactor'])->name('profile.disable-2fa');
+        
+        // Rotas de chat
+        Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/messages/{conversation}', [ChatController::class, 'show'])->name('chat.show');
+        Route::post('/messages/{conversation}/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+        Route::post('/messages/start', [ChatController::class, 'startChat'])->name('chat.start');
+        Route::get('/messages/{conversation}/api', [ChatController::class, 'getMessages'])->name('chat.api');
     });
 });
 
@@ -97,9 +114,15 @@ Route::prefix('ong')->name('ong.')->group(function () {
         Route::delete('/profile', [OngProfileController::class, 'destroy'])->name('profile.destroy'); 
         Route::post('/profile/logo', [OngProfileController::class, 'uploadLogo'])->name('profile.logo');
         Route::delete('/profile/logo', [OngProfileController::class, 'removeLogo'])->name('profile.logo.remove');
-    Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
-    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+        Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
+        Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+        Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+        
+        // Rotas de chat
+        Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/messages/{conversation}', [ChatController::class, 'show'])->name('chat.show');
+        Route::post('/messages/{conversation}/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+        Route::get('/messages/{conversation}/api', [ChatController::class, 'getMessages'])->name('chat.api');
     });
 });
 
@@ -121,3 +144,8 @@ Route::middleware('auth:ong')->group(function () {
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 Route::get('/posts/{post}/comments', [App\Http\Controllers\Api\CommentController::class, 'index'])->name('comments.index');
+
+// No final do web.php, adicione uma rota fallback
+Route::get('/login', function () {
+    return redirect()->route('regular.login');
+})->name('login');

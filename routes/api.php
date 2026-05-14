@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\CachedController;
 
+
 Route::get('/health', function() {
     return response()->json(['status' => 'ok']);
 });
@@ -48,6 +49,18 @@ Route::get('/search/posts', [SearchController::class, 'posts']);
 // Estatísticas públicas
 Route::get('/stats/overview', [StatsController::class, 'overview']);
 Route::get('/stats/categories', [StatsController::class, 'categories']);
+
+
+// 2FA Routes
+Route::post('/verify-2fa', [AuthController::class, 'verifyTwoFactor']);
+Route::post('/resend-2fa', [AuthController::class, 'resendTwoFactorCode']);
+
+// Rotas protegidas para gerenciar 2FA
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/enable-2fa', [AuthController::class, 'enableTwoFactor']);
+    Route::post('/confirm-2fa', [AuthController::class, 'confirmTwoFactor']);
+    Route::post('/disable-2fa', [AuthController::class, 'disableTwoFactor']);
+});
 
 // ===========================================
 // ROTAS PROTEGIDAS (requerem token Sanctum)

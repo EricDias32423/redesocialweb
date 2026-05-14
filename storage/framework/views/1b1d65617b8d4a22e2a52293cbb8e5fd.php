@@ -116,9 +116,15 @@
                                     <i class="fas fa-eye me-1"></i>Ler mais
                                 </a>
                                 
-                                <div class="small text-muted">
-                                    <i class="far fa-comment me-1"></i> <?php echo e($post->comments_count ?? 0); ?>
+                                <div class="small text-muted d-flex gap-3">
+                                    <span>
+                                        <i class="far fa-heart me-1"></i><?php echo e($post->likes_count ?? 0); ?>
 
+                                    </span>
+                                    <span>
+                                        <i class="far fa-comment me-1"></i><?php echo e($post->comments_count ?? 0); ?>
+
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -172,4 +178,5 @@
 }
 </style>
 <?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/posts/index.blade.php ENDPATH**/ ?>

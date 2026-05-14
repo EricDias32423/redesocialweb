@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\RegularUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -14,24 +15,41 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+    use App\Services\TwoFactorService;
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    // Autenticar para verificar senha
+    if (Auth::guard('regular')->attempt($credentials, $request->boolean('remember'))) {
+        $user = Auth::guard('regular')->user();
+        
+        // Verificar se 2FA está ativado
+        if (TwoFactorService::isEnabled($user)) {
+            // Enviar código e salvar user_id na sessão
+            TwoFactorService::sendCode($user);
+            session(['2fa_user_id' => $user->id]);
             
-            return redirect()->intended('/')
-                ->with('success', 'Login realizado com sucesso! Bem-vindo de volta!');
+            Auth::guard('regular')->logout();
+            $request->session()->invalidate();
+            
+            return redirect()->route('2fa.verify')
+                ->with('info', 'Digite o código de verificação enviado para seu e-mail.');
         }
-
-        return back()->withErrors([
-            'email' => 'As credenciais fornecidas não correspondem aos nossos registros.',
-        ])->onlyInput('email');
+        
+        // Sem 2FA, login normal
+        $request->session()->regenerate();
+        return redirect()->intended(route('regular.dashboard'));
     }
+
+    return back()->withErrors([
+        'email' => 'As credenciais fornecidas não correspondem aos nossos registros.',
+    ])->onlyInput('email');
+}
 
     public function showRegistrationForm()
     {

@@ -26,6 +26,7 @@
                                     <th>Título</th>
                                     <th>Categoria</th>
                                     <th>Data</th>
+                                    <th>Curtidas</th>
                                     <th>Comentários</th>
                                     <th class="text-end">Ações</th>
                                 </tr>
@@ -53,6 +54,12 @@
                                             <span class="small text-muted">
                                                 <i class="far fa-calendar me-1"></i>
                                                 <?php echo e($post->created_at->format('d/m/Y H:i')); ?>
+
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-light text-dark">
+                                                <?php echo e($post->likes_count ?? 0); ?>
 
                                             </span>
                                         </td>
@@ -106,4 +113,5 @@
     </div>
 </div>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/posts/my-posts.blade.php ENDPATH**/ ?>

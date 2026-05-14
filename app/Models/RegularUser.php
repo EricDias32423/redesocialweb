@@ -14,7 +14,10 @@ class RegularUser extends Authenticatable
     
     protected $fillable = [
         'name', 'email', 'password', 'cpf', 'birth_date', 
-        'phone', 'avatar', 'email_verified_at'
+        'phone', 'avatar', 'email_verified_at',
+         'two_factor_code',           // ✅ ADICIONAR
+    'two_factor_expires_at',     // ✅ ADICIONAR
+    'two_factor_enabled'         // ✅ ADICIONAR
     ];
 
     protected $hidden = [

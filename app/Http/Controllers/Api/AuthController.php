@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Jobs\SendWelcomeEmailJob;
 use App\Models\Ong;
-
+use App\Services\TwoFactorService;
+use App\Jobs\SendTwoFactorCodeJob;
 
 class AuthController extends Controller
 {
@@ -105,37 +106,80 @@ public function registerOng(Request $request)
      * Login de usuário comum
      */
     public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        $user = RegularUser::where('email', $request->email)->first();
+    // Tenta encontrar em regular_users
+    $user = RegularUser::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['As credenciais fornecidas estão incorretas.'],
+    // Se não encontrar, tenta em ongs
+    if (!$user) {
+        $user = Ong::where('email', $request->email)->first();
+        
+        // Para ONGs, não tem 2FA, login normal
+        if ($user && Hash::check($request->password, $user->password)) {
+            $user->tokens()->delete();
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login da ONG realizado com sucesso!',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->ong_name,
+                    'email' => $user->email,
+                    'type' => 'ong'
+                ],
+                'token' => $token
             ]);
         }
-
-        // Remove tokens antigos (opcional)
-        $user->tokens()->delete();
-
-        // Gera novo token
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login realizado com sucesso!',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
-            'token' => $token
+        
+        throw ValidationException::withMessages([
+            'email' => ['As credenciais fornecidas estão incorretas.'],
         ]);
     }
+
+    // Verificar senha do usuário comum
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['As credenciais fornecidas estão incorretas.'],
+        ]);
+    }
+
+    // 🔐 VERIFICAÇÃO DE 2FA
+    // Se 2FA já estiver ativado, enviar código
+    if (TwoFactorService::isEnabled($user)) {
+        TwoFactorService::sendCode($user);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Código de verificação enviado para seu e-mail.',
+            'requires_two_factor' => true,
+            'user_id' => $user->id,
+            'email' => $user->email
+        ]);
+    }
+
+    // Se 2FA não estiver ativado, login normal
+    $user->tokens()->delete();
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Login realizado com sucesso!',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'type' => 'regular',
+            'two_factor_enabled' => false
+        ],
+        'token' => $token
+    ]);
+}
     // Em AuthController
 public function loginOng(Request $request)
 {

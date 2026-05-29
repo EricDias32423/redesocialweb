@@ -140,11 +140,6 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                             <li>
-                                <a class="dropdown-item" href="<?php echo e(route('ong.dashboard')); ?>">
-                                    <i class="fas fa-tachometer-alt me-2" style="width: 1.2rem;"></i>Dashboard
-                                </a>
-                            </li>
-                            <li>
                                 <a class="dropdown-item" href="<?php echo e(route('ong.profile.edit')); ?>">
                                     <i class="fas fa-building me-2" style="width: 1.2rem;"></i>Perfil da ONG
                                 </a>

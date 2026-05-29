@@ -60,7 +60,7 @@
                         <input type="checkbox" class="form-check-input" id="remember" name="remember">
                         <label class="form-check-label small text-secondary" for="remember">Lembrar-me</label>
                     </div>
-                    <a href="#" class="link-password">Esqueceu a senha?</a>
+                    <a href="{{ route('password.request') }}" class="link-password">Esqueceu a senha?</a>
                 </div>
 
                 <button type="submit" class="btn-entrar-ong">

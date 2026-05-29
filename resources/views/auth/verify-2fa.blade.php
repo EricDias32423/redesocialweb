@@ -23,6 +23,12 @@
                     </div>
                 @endif
 
+                @if(session('info'))
+                    <div class="alert alert-info border-0 bg-info bg-opacity-10 text-info py-2 mb-3">
+                        <i class="fas fa-info-circle me-2"></i>{{ session('info') }}
+                    </div>
+                @endif
+
                 @if(session('error'))
                     <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger py-2 mb-3">
                         <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
@@ -32,6 +38,7 @@
                 <form method="POST" action="{{ route('2fa.verify.submit') }}">
                     @csrf
                     <input type="hidden" name="user_id" value="{{ $user_id }}">
+                    <input type="hidden" name="user_type" value="{{ $user_type ?? 'regular' }}">
 
                     <div class="mb-4">
                         <label for="code" class="form-label text-muted small fw-semibold">CÓDIGO DE VERIFICAÇÃO</label>
@@ -66,11 +73,12 @@
                     <form method="POST" action="{{ route('2fa.resend') }}">
                         @csrf
                         <input type="hidden" name="user_id" value="{{ $user_id }}">
+                        <input type="hidden" name="user_type" value="{{ $user_type ?? 'regular' }}">
                         <button type="submit" class="btn btn-link text-muted small">
                             <i class="fas fa-redo-alt me-1"></i>Reenviar código
                         </button>
                     </form>
-                    <a href="{{ route('regular.login') }}" class="text-muted small text-decoration-none">
+                    <a href="{{ route($login_route ?? 'regular.login') }}" class="text-muted small text-decoration-none">
                         <i class="fas fa-arrow-left me-1"></i>Voltar para o login
                     </a>
                 </div>

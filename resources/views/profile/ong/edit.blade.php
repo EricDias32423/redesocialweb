@@ -278,6 +278,31 @@
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="border rounded p-3 mt-4">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="fas fa-user-shield me-2" style="color: var(--primary-blue);"></i>
+                                    Verificacao em duas etapas
+                                </h6>
+
+                                @if($ong->two_factor_enabled)
+                                    <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success py-2 mb-3">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        2FA esta ativo. Ao fazer login, sera necessario informar um codigo enviado por e-mail.
+                                    </div>
+                                    <button type="submit" form="disable2faForm" class="btn btn-outline-danger">
+                                        <i class="fas fa-lock-open me-2"></i>Desativar 2FA
+                                    </button>
+                                @else
+                                    <div class="alert alert-warning border-0 bg-warning bg-opacity-10 text-warning py-2 mb-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        2FA esta desativado. Ative para proteger o acesso da ONG com codigo por e-mail.
+                                    </div>
+                                    <button type="submit" form="enable2faForm" class="btn btn-primary">
+                                        <i class="fas fa-shield-alt me-2"></i>Ativar 2FA
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -289,6 +314,14 @@
                             <i class="fas fa-save me-2"></i>Salvar Alterações
                         </button>
                     </div>
+                </form>
+
+                <form id="enable2faForm" method="POST" action="{{ route('ong.profile.enable-2fa') }}">
+                    @csrf
+                </form>
+
+                <form id="disable2faForm" method="POST" action="{{ route('ong.profile.disable-2fa') }}">
+                    @csrf
                 </form>
             </div>
         </div>

@@ -114,6 +114,8 @@ Route::prefix('ong')->name('ong.')->group(function () {
         Route::delete('/profile', [OngProfileController::class, 'destroy'])->name('profile.destroy'); 
         Route::post('/profile/logo', [OngProfileController::class, 'uploadLogo'])->name('profile.logo');
         Route::delete('/profile/logo', [OngProfileController::class, 'removeLogo'])->name('profile.logo.remove');
+        Route::post('/profile/enable-2fa', [OngProfileController::class, 'enableTwoFactor'])->name('profile.enable-2fa');
+        Route::post('/profile/disable-2fa', [OngProfileController::class, 'disableTwoFactor'])->name('profile.disable-2fa');
         Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
         Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
         Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -149,3 +151,12 @@ Route::get('/posts/{post}/comments', [App\Http\Controllers\Api\CommentController
 Route::get('/login', function () {
     return redirect()->route('regular.login');
 })->name('login');
+
+// Password reset pages (web)
+Route::get('/password/forgot', function () {
+    return view('auth.forgot-password');
+})->name('password.request');
+
+Route::get('/password/reset-code', function () {
+    return view('auth.reset-password-code');
+})->name('password.reset.code');

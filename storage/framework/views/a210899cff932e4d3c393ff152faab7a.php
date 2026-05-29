@@ -452,6 +452,31 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
                             </div>
+
+                            <div class="border rounded p-3 mt-4">
+                                <h6 class="fw-bold mb-2">
+                                    <i class="fas fa-user-shield me-2" style="color: var(--primary-blue);"></i>
+                                    Verificacao em duas etapas
+                                </h6>
+
+                                <?php if($ong->two_factor_enabled): ?>
+                                    <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success py-2 mb-3">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        2FA esta ativo. Ao fazer login, sera necessario informar um codigo enviado por e-mail.
+                                    </div>
+                                    <button type="submit" form="disable2faForm" class="btn btn-outline-danger">
+                                        <i class="fas fa-lock-open me-2"></i>Desativar 2FA
+                                    </button>
+                                <?php else: ?>
+                                    <div class="alert alert-warning border-0 bg-warning bg-opacity-10 text-warning py-2 mb-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        2FA esta desativado. Ative para proteger o acesso da ONG com codigo por e-mail.
+                                    </div>
+                                    <button type="submit" form="enable2faForm" class="btn btn-primary">
+                                        <i class="fas fa-shield-alt me-2"></i>Ativar 2FA
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
 
@@ -463,6 +488,14 @@ unset($__errorArgs, $__bag); ?>
                             <i class="fas fa-save me-2"></i>Salvar Alterações
                         </button>
                     </div>
+                </form>
+
+                <form id="enable2faForm" method="POST" action="<?php echo e(route('ong.profile.enable-2fa')); ?>">
+                    <?php echo csrf_field(); ?>
+                </form>
+
+                <form id="disable2faForm" method="POST" action="<?php echo e(route('ong.profile.disable-2fa')); ?>">
+                    <?php echo csrf_field(); ?>
                 </form>
             </div>
         </div>
@@ -559,4 +592,5 @@ function validatePassword() {
 </script>
 <?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/profile/ong/edit.blade.php ENDPATH**/ ?>

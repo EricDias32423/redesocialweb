@@ -2,87 +2,120 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ong;
 use App\Models\RegularUser;
 use App\Services\TwoFactorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class TwoFactorController extends Controller
 {
-    /**
-     * Mostrar formulário de verificação 2FA
-     */
     public function showVerifyForm(Request $request)
     {
         $userId = session('2fa_user_id');
-        
+
         if (!$userId) {
-        return redirect()->route('regular.login');        }
-        
-        return view('auth.verify-2fa', ['user_id' => $userId]);
-    }
-
-    /**
-     * Verificar código 2FA
-     */
-    public function verify(Request $request)
-{
-    \Log::info('✅ STEP 1: Iniciando verify');
-    \Log::info('✅ STEP 2: Request data: ' . json_encode($request->all()));
-    
-    $request->validate([
-        'user_id' => 'required|exists:regular_users,id',
-        'code' => 'required|string|size:6'
-    ]);
-
-    $user = RegularUser::find($request->user_id);
-    \Log::info('✅ STEP 3: Usuário encontrado: ' . $user->id);
-    \Log::info('✅ STEP 4: Código no banco: ' . $user->two_factor_code);
-    \Log::info('✅ STEP 5: Código digitado: ' . $request->code);
-    \Log::info('✅ STEP 6: Expira em: ' . $user->two_factor_expires_at);
-    \Log::info('✅ STEP 7: Agora: ' . now());
-
-    if (TwoFactorService::verifyCode($user, $request->code)) {
-        \Log::info('✅ STEP 8: Código VÁLIDO!');
-        
-        if (session('2fa_enabling')) {
-            \Log::info('✅ STEP 9: Está ativando 2FA');
-            session()->forget('2fa_enabling');
-            session()->forget('2fa_user_id');
-            Auth::guard('regular')->login($user);
-            \Log::info('✅ STEP 10: 2FA ATIVADO com sucesso!');
-            return redirect()->route('regular.profile.edit')
-                ->with('success', '2FA ativado com sucesso!');
+            return redirect()->route('regular.login');
         }
-        
-        \Log::info('✅ STEP 11: Login normal (não ativação)');
-        Auth::guard('regular')->login($user);
-        return redirect()->intended(route('regular.dashboard'))
-            ->with('success', 'Login realizado com sucesso!');
+
+        $userType = session('2fa_user_type', 'regular');
+
+        return view('auth.verify-2fa', [
+            'user_id' => $userId,
+            'user_type' => $userType,
+            'login_route' => $this->loginRoute($userType),
+        ]);
     }
 
-    \Log::info('❌ STEP 8: Código INVÁLIDO!');
-    return back()
-        ->withErrors(['code' => 'Código inválido ou expirado.'])
-        ->withInput();
-}
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer',
+            'user_type' => 'nullable|in:regular,ong',
+            'code' => 'required|string|size:6',
+        ]);
 
-    /**
-     * Reenviar código 2FA
-     */
+        $userType = session('2fa_user_type', 'regular');
+
+        if (!$this->sessionMatchesRequest($request, $userType)) {
+            return redirect()->route($this->loginRoute($userType))
+                ->withErrors(['email' => 'Sessao de verificacao expirada. Faca login novamente.']);
+        }
+
+        $user = $this->findPendingUser((int) $request->user_id, $userType);
+
+        if (!$user) {
+            return redirect()->route($this->loginRoute($userType))
+                ->withErrors(['email' => 'Conta nao encontrada. Faca login novamente.']);
+        }
+
+        if (TwoFactorService::verifyCode($user, $request->code)) {
+            if (session('2fa_enabling')) {
+                session()->forget(['2fa_enabling', '2fa_user_id', '2fa_user_type', '2fa_remember']);
+                Auth::guard($userType)->login($user);
+
+                return redirect()->route($userType === 'ong' ? 'ong.profile.edit' : 'regular.profile.edit')
+                    ->with('success', '2FA ativado com sucesso!');
+            }
+
+            $remember = session('2fa_remember', false);
+            session()->forget(['2fa_user_id', '2fa_user_type', '2fa_remember']);
+
+            Auth::guard($userType)->login($user, $remember);
+            $request->session()->regenerate();
+
+            return redirect()->intended(route($userType === 'ong' ? 'ong.dashboard' : 'regular.dashboard'))
+                ->with('success', 'Login realizado com sucesso!');
+        }
+
+        return back()
+            ->withErrors(['code' => 'Codigo invalido ou expirado.'])
+            ->withInput();
+    }
+
     public function resend(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:regular_users,id'
+            'user_id' => 'required|integer',
+            'user_type' => 'nullable|in:regular,ong',
         ]);
 
-        $user = RegularUser::find($request->user_id);
-        
-        if (TwoFactorService::resendCode($user)) {
-            return back()->with('success', 'Novo código enviado para seu e-mail!');
+        $userType = session('2fa_user_type', 'regular');
+
+        if (!$this->sessionMatchesRequest($request, $userType)) {
+            return redirect()->route($this->loginRoute($userType))
+                ->withErrors(['email' => 'Sessao de verificacao expirada. Faca login novamente.']);
         }
 
-        return back()->with('error', 'Erro ao reenviar código.');
+        $user = $this->findPendingUser((int) $request->user_id, $userType);
+
+        if (!$user) {
+            return redirect()->route($this->loginRoute($userType))
+                ->withErrors(['email' => 'Conta nao encontrada. Faca login novamente.']);
+        }
+
+        if (TwoFactorService::resendCode($user)) {
+            return back()->with('success', 'Novo codigo enviado para seu e-mail!');
+        }
+
+        return back()->with('error', 'Erro ao reenviar codigo.');
+    }
+
+    private function sessionMatchesRequest(Request $request, string $userType): bool
+    {
+        return (int) session('2fa_user_id') === (int) $request->user_id
+            && (!$request->filled('user_type') || $request->user_type === $userType);
+    }
+
+    private function findPendingUser(int $userId, string $userType): RegularUser|Ong|null
+    {
+        return $userType === 'ong'
+            ? Ong::find($userId)
+            : RegularUser::find($userId);
+    }
+
+    private function loginRoute(string $userType): string
+    {
+        return $userType === 'ong' ? 'ong.login' : 'regular.login';
     }
 }

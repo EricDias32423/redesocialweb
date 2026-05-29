@@ -24,6 +24,13 @@
                     </div>
                 <?php endif; ?>
 
+                <?php if(session('info')): ?>
+                    <div class="alert alert-info border-0 bg-info bg-opacity-10 text-info py-2 mb-3">
+                        <i class="fas fa-info-circle me-2"></i><?php echo e(session('info')); ?>
+
+                    </div>
+                <?php endif; ?>
+
                 <?php if(session('error')): ?>
                     <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger py-2 mb-3">
                         <i class="fas fa-exclamation-circle me-2"></i><?php echo e(session('error')); ?>
@@ -34,6 +41,7 @@
                 <form method="POST" action="<?php echo e(route('2fa.verify.submit')); ?>">
                     <?php echo csrf_field(); ?>
                     <input type="hidden" name="user_id" value="<?php echo e($user_id); ?>">
+                    <input type="hidden" name="user_type" value="<?php echo e($user_type ?? 'regular'); ?>">
 
                     <div class="mb-4">
                         <label for="code" class="form-label text-muted small fw-semibold">CÓDIGO DE VERIFICAÇÃO</label>
@@ -82,11 +90,12 @@ unset($__errorArgs, $__bag); ?>
                     <form method="POST" action="<?php echo e(route('2fa.resend')); ?>">
                         <?php echo csrf_field(); ?>
                         <input type="hidden" name="user_id" value="<?php echo e($user_id); ?>">
+                        <input type="hidden" name="user_type" value="<?php echo e($user_type ?? 'regular'); ?>">
                         <button type="submit" class="btn btn-link text-muted small">
                             <i class="fas fa-redo-alt me-1"></i>Reenviar código
                         </button>
                     </form>
-                    <a href="<?php echo e(route('regular.login')); ?>" class="text-muted small text-decoration-none">
+                    <a href="<?php echo e(route($login_route ?? 'regular.login')); ?>" class="text-muted small text-decoration-none">
                         <i class="fas fa-arrow-left me-1"></i>Voltar para o login
                     </a>
                 </div>
@@ -95,4 +104,5 @@ unset($__errorArgs, $__bag); ?>
     </div>
 </div>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\47808487848\Herd\redesocialweb\resources\views/auth/verify-2fa.blade.php ENDPATH**/ ?>

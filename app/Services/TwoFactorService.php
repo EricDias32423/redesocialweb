@@ -3,11 +3,10 @@
 namespace App\Services;
 
 use App\Jobs\SendTwoFactorCodeJob;
-use App\Models\RegularUser;
+use App\Mail\TwoFactorCodeMail;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
 
 class TwoFactorService
 {
@@ -22,7 +21,7 @@ class TwoFactorService
     /**
      * Salvar código no banco e enviar por e-mail
      */
-    public static function sendCode(RegularUser $user): bool
+    public static function sendCode(Model $user): bool
     {
         $code = self::generateCode();
         
@@ -31,8 +30,14 @@ class TwoFactorService
         $user->two_factor_expires_at = Carbon::now()->addMinutes(2);
         $user->save();
         
-        // Disparar job para enviar e-mail
-        SendTwoFactorCodeJob::dispatch($user, $code);
+        // Enviar e-mail: se a fila for síncrona, enviar direto; caso contrário, dispatch para a fila
+        if (config('queue.default') === 'sync') {
+            $name = $user->name ?? $user->ong_name ?? $user->responsible_name ?? 'usuario';
+            Mail::to($user->email)->send(new TwoFactorCodeMail($code, $name));
+        } else {
+            // Disparar job para enviar e-mail (background)
+            SendTwoFactorCodeJob::dispatch($user, $code);
+        }
         
         return true;
     }
@@ -40,7 +45,7 @@ class TwoFactorService
     /**
      * Verificar se o código é válido
      */
-   public static function verifyCode(RegularUser $user, string $code): bool
+   public static function verifyCode(Model $user, string $code): bool
 {
     \Log::info('🔑 VERIFY: Verificando código');
     \Log::info('🔑 VERIFY: two_factor_code: ' . $user->two_factor_code);
@@ -69,7 +74,7 @@ class TwoFactorService
     /**
      * Verificar se o usuário tem 2FA ativado
      */
-    public static function isEnabled(RegularUser $user): bool
+    public static function isEnabled(Model $user): bool
     {
         return $user->two_factor_enabled;
     }
@@ -77,7 +82,7 @@ class TwoFactorService
     /**
      * Desabilitar 2FA
      */
-    public static function disable(RegularUser $user): void
+    public static function disable(Model $user): void
     {
         $user->two_factor_code = null;
         $user->two_factor_expires_at = null;
@@ -88,7 +93,7 @@ class TwoFactorService
     /**
      * Verificar se o código expirou
      */
-    public static function isExpired(RegularUser $user): bool
+    public static function isExpired(Model $user): bool
     {
         if (!$user->two_factor_expires_at) {
             return true;
@@ -100,7 +105,7 @@ class TwoFactorService
     /**
      * Reenviar código
      */
-    public static function resendCode(RegularUser $user): bool
+    public static function resendCode(Model $user): bool
     {
         // Limpar código antigo
         $user->two_factor_code = null;

@@ -27,6 +27,8 @@ class RegularUser extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'birth_date' => 'date',
+        'two_factor_expires_at' => 'datetime',
+        'two_factor_enabled' => 'boolean',
     ];
 
     // Relacionamentos

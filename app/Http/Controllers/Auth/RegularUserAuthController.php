@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendWelcomeEmailJob;
+use App\Services\TwoFactorService;
 
 class RegularUserAuthController extends Controller
 {
@@ -56,8 +57,22 @@ class RegularUserAuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::guard('regular')->attempt($credentials, $request->boolean('remember'))) {
+        $user = RegularUser::where('email', $credentials['email'])->first();
+
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            if (TwoFactorService::isEnabled($user)) {
+                TwoFactorService::sendCode($user);
+
+                $request->session()->put('2fa_user_id', $user->id);
+                $request->session()->put('2fa_remember', $request->boolean('remember'));
+
+                return redirect()->route('2fa.verify')
+                    ->with('info', 'Digite o codigo de verificacao enviado para seu e-mail.');
+            }
+
+            Auth::guard('regular')->login($user, $request->boolean('remember'));
             $request->session()->regenerate();
+
             return redirect()->intended(route('regular.dashboard'));
         }
 

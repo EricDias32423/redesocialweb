@@ -15,7 +15,8 @@ class Ong extends Authenticatable
     protected $fillable = [
         'responsible_name', 'ong_name', 'email', 'password', 
         'cnpj', 'description', 'logo', 'address', 'phone', 
-        'website', 'social_media', 'email_verified_at'
+        'website', 'social_media', 'email_verified_at',
+        'two_factor_code', 'two_factor_expires_at', 'two_factor_enabled'
     ];
 
     protected $hidden = [
@@ -25,6 +26,8 @@ class Ong extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'social_media' => 'array',
+        'two_factor_expires_at' => 'datetime',
+        'two_factor_enabled' => 'boolean',
     ];
 
     // Relacionamentos

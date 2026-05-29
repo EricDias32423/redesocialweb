@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LikeController;
@@ -23,6 +24,10 @@ Route::get('/health', function() {
 // Autenticação
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Password reset via code
+Route::post('/password/forgot', [PasswordResetController::class, 'forgot'])->middleware('throttle:6,1');
+Route::post('/password/reset-code', [PasswordResetController::class, 'resetWithCode'])->middleware('throttle:10,60');
 
 // Registro de ONG
 Route::post('/ong/register', [AuthController::class, 'registerOng']);
@@ -54,6 +59,8 @@ Route::get('/stats/categories', [StatsController::class, 'categories']);
 // 2FA Routes
 Route::post('/verify-2fa', [AuthController::class, 'verifyTwoFactor']);
 Route::post('/resend-2fa', [AuthController::class, 'resendTwoFactorCode']);
+Route::post('/ong/verify-2fa', [AuthController::class, 'verifyTwoFactor']);
+Route::post('/ong/resend-2fa', [AuthController::class, 'resendTwoFactorCode']);
 
 // Rotas protegidas para gerenciar 2FA
 Route::middleware('auth:sanctum')->group(function () {

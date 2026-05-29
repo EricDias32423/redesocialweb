@@ -7,6 +7,7 @@ use App\Models\Ong;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Services\TwoFactorService;
 
 class OngAuthController extends Controller
 {
@@ -55,8 +56,23 @@ class OngAuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::guard('ong')->attempt($credentials, $request->boolean('remember'))) {
+        $ong = Ong::where('email', $credentials['email'])->first();
+
+        if ($ong && Hash::check($credentials['password'], $ong->password)) {
+            if (TwoFactorService::isEnabled($ong)) {
+                TwoFactorService::sendCode($ong);
+
+                $request->session()->put('2fa_user_id', $ong->id);
+                $request->session()->put('2fa_user_type', 'ong');
+                $request->session()->put('2fa_remember', $request->boolean('remember'));
+
+                return redirect()->route('2fa.verify')
+                    ->with('info', 'Digite o codigo de verificacao enviado para o e-mail da ONG.');
+            }
+
+            Auth::guard('ong')->login($ong, $request->boolean('remember'));
             $request->session()->regenerate();
+
             return redirect()->intended(route('ong.dashboard'));
         }
 

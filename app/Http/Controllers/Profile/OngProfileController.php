@@ -8,9 +8,36 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use App\Services\TwoFactorService;
 
 class OngProfileController extends Controller
 {
+    public function enableTwoFactor(Request $request)
+    {
+        $ong = Auth::guard('ong')->user();
+
+        TwoFactorService::sendCode($ong);
+
+        session([
+            '2fa_enabling' => true,
+            '2fa_user_id' => $ong->id,
+            '2fa_user_type' => 'ong',
+        ]);
+
+        return redirect()->route('2fa.verify')
+            ->with('info', 'Codigo enviado para o e-mail da ONG!');
+    }
+
+    public function disableTwoFactor(Request $request)
+    {
+        $ong = Auth::guard('ong')->user();
+
+        TwoFactorService::disable($ong);
+
+        return redirect()->route('ong.profile.edit')
+            ->with('success', '2FA desativado.');
+    }
+
     /**
      * Exibir formulário de edição do perfil
      */

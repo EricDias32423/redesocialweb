@@ -157,6 +157,8 @@ public function registerOng(Request $request)
         return response()->json([
             'success' => true,
             'message' => 'Código de verificação enviado para seu e-mail.',
+            'two_factor_required' => true,
+            'requires_2fa' => true,
             'requires_two_factor' => true,
             'user_id' => $user->id,
             'email' => $user->email
@@ -180,6 +182,159 @@ public function registerOng(Request $request)
         'token' => $token
     ]);
 }
+
+    /**
+     * Verificar o codigo 2FA antes de liberar o token da API.
+     */
+    public function verifyTwoFactor(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required_without:two_factor_code|string|size:6',
+            'two_factor_code' => 'required_without:code|string|size:6',
+            'user_id' => 'nullable|integer',
+            'email' => 'nullable|email',
+            'type' => 'nullable|in:regular,ong',
+        ]);
+
+        $code = $validated['code'] ?? $validated['two_factor_code'];
+
+        if (empty($validated['user_id']) && empty($validated['email'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Informe o usuario para verificar o codigo.',
+            ], 422);
+        }
+
+        $isOng = ($validated['type'] ?? null) === 'ong' || $request->is('api/ong/*');
+        $model = $isOng ? Ong::class : RegularUser::class;
+
+        $user = !empty($validated['user_id'])
+            ? $model::find($validated['user_id'])
+            : $model::where('email', $validated['email'])->first();
+
+        if (!$user || !TwoFactorService::verifyCode($user, $code)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Codigo invalido ou expirado.',
+            ], 422);
+        }
+
+        $user->tokens()->delete();
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login realizado com sucesso!',
+            'user' => [
+                'id' => $user->id,
+                'name' => $isOng ? $user->ong_name : $user->name,
+                'email' => $user->email,
+                'type' => $isOng ? 'ong' : 'regular',
+                'two_factor_enabled' => (bool) $user->two_factor_enabled,
+            ],
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * Reenviar codigo 2FA durante o login da API.
+     */
+    public function resendTwoFactorCode(Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => 'nullable|integer',
+            'email' => 'nullable|email',
+            'type' => 'nullable|in:regular,ong',
+        ]);
+
+        if (empty($validated['user_id']) && empty($validated['email'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Informe o usuario para reenviar o codigo.',
+            ], 422);
+        }
+
+        $isOng = ($validated['type'] ?? null) === 'ong' || $request->is('api/ong/*');
+        $model = $isOng ? Ong::class : RegularUser::class;
+
+        $user = !empty($validated['user_id'])
+            ? $model::find($validated['user_id'])
+            : $model::where('email', $validated['email'])->first();
+
+        if (!$user || !TwoFactorService::isEnabled($user)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nao foi possivel reenviar o codigo.',
+            ], 422);
+        }
+
+        TwoFactorService::resendCode($user);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Novo codigo enviado para seu e-mail.',
+        ]);
+    }
+
+    public function enableTwoFactor(Request $request)
+    {
+        $user = $request->user();
+
+        if (!($user instanceof RegularUser) && !($user instanceof Ong)) {
+            return response()->json([
+                'success' => false,
+                'message' => '2FA disponivel apenas para usuarios comuns e ONGs.',
+            ], 422);
+        }
+
+        TwoFactorService::sendCode($user);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Codigo de confirmacao enviado para seu e-mail.',
+        ]);
+    }
+
+    public function confirmTwoFactor(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|size:6',
+        ]);
+
+        $user = $request->user();
+
+        if ((!($user instanceof RegularUser) && !($user instanceof Ong)) || !TwoFactorService::verifyCode($user, $request->code)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Codigo invalido ou expirado.',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => '2FA ativado com sucesso.',
+        ]);
+    }
+
+    public function disableTwoFactor(Request $request)
+    {
+        $user = $request->user();
+
+        if (!($user instanceof RegularUser) && !($user instanceof Ong)) {
+            return response()->json([
+                'success' => false,
+                'message' => '2FA disponivel apenas para usuarios comuns e ONGs.',
+            ], 422);
+        }
+
+        TwoFactorService::disable($user);
+
+        return response()->json([
+            'success' => true,
+            'message' => '2FA desativado com sucesso.',
+        ]);
+    }
+
     // Em AuthController
 public function loginOng(Request $request)
 {
@@ -193,6 +348,21 @@ public function loginOng(Request $request)
     if (!$ong || !Hash::check($request->password, $ong->password)) {
         throw ValidationException::withMessages([
             'email' => ['Credenciais inválidas.'],
+        ]);
+    }
+
+    if (TwoFactorService::isEnabled($ong)) {
+        TwoFactorService::sendCode($ong);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Codigo de verificacao enviado para o e-mail da ONG.',
+            'two_factor_required' => true,
+            'requires_2fa' => true,
+            'requires_two_factor' => true,
+            'user_id' => $ong->id,
+            'email' => $ong->email,
+            'type' => 'ong',
         ]);
     }
 

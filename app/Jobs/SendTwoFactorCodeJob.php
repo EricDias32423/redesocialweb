@@ -25,6 +25,8 @@ class SendTwoFactorCodeJob implements ShouldQueue
 
     public function handle(): void
     {
-        Mail::to($this->user->email)->send(new TwoFactorCodeMail($this->code, $this->user->name));
+        $name = $this->user->name ?? $this->user->ong_name ?? $this->user->responsible_name ?? 'usuario';
+
+        Mail::to($this->user->email)->send(new TwoFactorCodeMail($this->code, $name));
     }
 }
